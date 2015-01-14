@@ -2,14 +2,28 @@
 
 var express = require('express');
 var errorHandler = require('errorhandler');
+var base64_decode = require('base64').decode;
 var app = express();
 
 
 //Fake db items - TODO:: Implement MongoDB
+
+var users = {
+  'ziyad' : { username: 'ziyad', password: '123456', userid: '1' },
+  'chris': { username: 'chris', password: '123456', userid: '2' },
+  'augusto': { username: 'augusto', password: '123456', userid: '3'}
+};
+
+var nodeapps = {
+  'a' : { appname: 'hello8124.js', port: '8124', userid: '1' },
+  'b' : { appname: 'hello8125.js', port: '8125', userid: '2' },
+  'c' : { appname: 'hello8126.js', port: '8126', userid: '3' }
+};
+
 var items = [
-  { username: 'ziyad', password: '123456', subdomain: 'a', port: '8001' },
-  { username: 'chris', password: '123456', subdomain: 'b', port: '8002' },
-  { username: 'augusto', password: '123456', subdomain: 'c', port: '8003' }
+  { userid: 1, subdomain: 'a', port: '8001' },
+  { userid: 2, subdomain: 'b', port: '8002' },
+  { userid: 3, subdomain: 'c', port: '8003' }
 ];
 
 //Routes
@@ -17,13 +31,30 @@ var items = [
 app.get('/', function(req, res, next) {
   res.status(200);
   res.set({ 'Content-Type' : 'text/html' });
-  res.send('<h1>Scope says hi! / Node.js app hosting</h1>');
-  res.send('<p>Visit /api/2</p>');
-  res.send('<p>Visit /api/2.json</p>');
+  res.send('<h1>Scope says hi! / Node.js app hosting</h1>' +
+           '<p>Visit <a href="http://ziyad:123@api.localhost:4000/status">http://ziyad:123@api.localhost:4000/status</a> Bad auth</p>' +
+           '<p>Visit <a href="http://ziyad:123456@api.localhost:4000/status">http://ziyad:123456@api.localhost:4000/status</a> Good auth</p>' +
+           '<p>Visit /list/2</p>' +
+           '<p>Visit /list/2.json</p>');
   res.end();
 });
 
-app.get('/api/:id.:format?', function(req, res, next) {
+
+app.get('/status', function (req, res, next) {
+  res.status(200);
+  res.set({ 'Content-Type' : 'text/html' });
+
+  if (authenticate(req.headers.authorization)) {
+    res.send('<h1>Goods auth - now to list apps </h1>');
+  } else {
+    res.send('<h1> auth failed </h1>');
+  }
+
+  res.end();
+});
+
+
+app.get('/list/:id.:format?', function(req, res, next) {
   var id = req.params.id;
   var format = req.params.format;
   var item = items[id];
@@ -36,7 +67,7 @@ app.get('/api/:id.:format?', function(req, res, next) {
       case 'html':
       default:
         //Send some html by default
-        res.send('<h1>' + item.username + '<h1>');
+        res.send('<h1>' + item.subdomain + '<h1>');
     }
   } else {
     // Need to do 404 checking with next() but for now this will work
@@ -56,5 +87,25 @@ app.use(errorHandler({ showStack: true }));
 app.listen(3000);
 
 console.log('Scope started on port 3000');
+
+function authenticate (basicauth) {
+  if (typeof basicauth === 'undefined') {
+    return false;
+  };
+
+  var creds = base64_decode(basicauth.substring(basicauth.indexOf(" ") + 1));
+  var username = creds.substring(0, creds.indexOf(":"));
+  var password = creds.substring(creds.indexOf(":") + 1);
+
+
+  var user = users[username];
+
+  if (user.username === username && user.password === password) {
+    return true;
+  } else {
+    return false;
+  }
+
+};
 
 

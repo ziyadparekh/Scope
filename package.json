@@ -9,6 +9,7 @@
   "author": "Ziyad Parekh",
   "license": "ISC",
   "dependencies": {
+    "base64": "^2.1.0",
     "body-parser": "^1.10.1",
     "errorhandler": "^1.3.2",
     "express": "^4.11.0",
