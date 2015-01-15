@@ -3,8 +3,18 @@
 var express = require('express');
 var errorHandler = require('errorhandler');
 var base64_decode = require('base64').decode;
+var MongoClient = require('mongodb').MongoClient;
+var assert = require('assert');
 var app = express();
 
+var url = 'mongodb://localhost:27017/scope';
+
+MongoClient.connect(url, function(err, db) {
+  //assert.equal(null, err);
+  console.log('connected correctly to server');
+
+  db.close();
+});
 
 //Fake db items - TODO:: Implement MongoDB
 
@@ -84,9 +94,9 @@ process.on('uncaughtException', function(err){
 
 app.use(errorHandler({ showStack: true }));
 
-app.listen(3000);
+app.listen(3010);
 
-console.log('Scope started on port 3000');
+console.log('Scope started on port 3010');
 
 function authenticate (basicauth) {
   if (typeof basicauth === 'undefined') {

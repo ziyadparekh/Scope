@@ -48,14 +48,14 @@ http.createServer(function (req, res) {
       res.end('password?\n');
     } else {
       //Redirect to Scopes homepage
-      proxy.web(req, res, { target: 'http://localhost:3000' });
+      proxy.web(req, res, { target: 'http://localhost:3010' });
     }
   } else if (nodeapps[subdomain]) {
     console.log('http://localhost:' + nodeapps[subdomain].port);
     proxy.web(req, res, { target: 'http://localhost:' + nodeapps[subdomain].port});
   } else {
     //Redirect to Scopes homepage
-    proxy.web(req, res, { target: 'http://localhost:3000' });
+    proxy.web(req, res, { target: 'http://localhost:3010' });
   }
 }).listen(4000);
 
