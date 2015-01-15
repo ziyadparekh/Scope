@@ -39,7 +39,7 @@ http.createServer(function (req, res) {
   var subdomain = hostname.substring(0, hostname.indexOf("."));
 
   //show headers for testing
-  util.puts(JSON.stringify(req.headers.authorization));
+  //util.puts(JSON.stringify(req.headers.authorization));
 
   if (subdomain === 'api') {
     //send browser request for user credentials
