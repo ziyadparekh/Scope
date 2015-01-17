@@ -107,3 +107,16 @@ exports.removeNodeAppByName = function (appname, collectionString, db) {
   });
   return deferred.getPromise();
 };
+
+exports.findAllAppsInCollection = function (collectionString, db) {
+  var collection = db.collection(collectionString);
+  var deferred = mkDeferred();
+  collection.find({}).toArray(function (err, docs) {
+    if (err) {
+      deferred.reject(err);
+    } else {
+      deferred.resolve(docs)
+    }
+  });
+  return deferred.getPromise();
+};

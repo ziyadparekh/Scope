@@ -8,6 +8,7 @@ var MongoClient = require('mongodb').MongoClient;
 var assert = require('assert');
 var util = require('util');
 var crypto = require('crypto');
+var spawn = require('child_process').spawn;
 var mkDeferred = require('./deferred');
 var database = require("./database");
 var url = 'mongodb://localhost:27017/scope';
@@ -155,7 +156,9 @@ app.post('/apps', function (req, res, next) {
                     });
                   database.saveAppToNextPort(appObject, 'apps', db)
                     .then(function (result) {
+                      spawn('./gitreposetup.sh', [result[0]._id]);
                       res.status(200);
+                      res.send({ git : "git://nodefu.com/" + result[0]._id + ".git" });
                       res.send(result);
                     })
                     .fail(function (err) {
