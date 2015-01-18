@@ -38,9 +38,9 @@ var items = [
 app.get('/', function(req, res, next) {
   res.status(200);
   res.set({ 'Content-Type' : 'text/html' });
-  res.send('<h1>Scope says hi! / Node.js app hosting</h1>' +
+  res.send('<h1>Scope says hi! / Node.js app hosting from prod</h1>' +
            '<p>Visit <a href="http://ziyad:123@api.localhost:4000/status">http://ziyad:123@api.localhost:4000/status</a> Bad auth</p>' +
-           '<p>Visit <a href="http://ziyad:123456@api.localhost:4000/status">http://ziyad:123456@api.localhost:4000/status</a> Good auth</p>' +
+           '<p>Visit <a href="http://ziyadparekh:123456@api.localhost:4000/status">http://ziyadparekh:123456@api.localhost:4000/status</a> Good auth</p>' +
            '<p>Visit /list/2</p>' +
            '<p>Visit /list/2.json</p>');
   res.end();
@@ -158,8 +158,8 @@ app.post('/apps', function (req, res, next) {
                     .then(function (result) {
                       spawn('./gitreposetup.sh', [result[0]._id]);
                       res.status(200);
-                      res.send({ git : "git://nodefu.com/" + result[0]._id + ".git" });
-                      res.send(result);
+                      res.json({ git : "git://nodefu.com/" + result[0]._id + ".git" });
+                      res.json(result);
                     })
                     .fail(function (err) {
                       res.status(500)
