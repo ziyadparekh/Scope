@@ -38,7 +38,7 @@ var items = [
 app.get('/', function(req, res, next) {
   res.status(200);
   res.set({ 'Content-Type' : 'text/html' });
-  res.send('<h1>Protobox says hi! / Node.js app hosting from prod</h1>' +
+  res.send('<h1>Protobox says waddup! / Node.js app hosting from prod</h1>' +
            '<p>Visit <a href="http://ziyad:123@api.localhost:4000/status">http://ziyad:123@api.localhost:4000/status</a> Bad auth</p>' +
            '<p>Visit <a href="http://ziyadparekh:123456@api.localhost:4000/status">http://ziyadparekh:123456@api.localhost:4000/status</a> Good auth</p>' +
            '<p>Visit /list/2</p>' +
