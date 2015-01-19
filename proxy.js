@@ -71,10 +71,10 @@ http.createServer(function (req, res) {
       }
       database.findNodeAppByName(subdomain, 'apps', db)
         .then(function (app) {
-          proxy.web(req, res, { target : 'http://localhost:' + app.port });
+          proxy.web(req, res, { target : 'http://protobox.io/' + app.port });
         })
         .fail(function (err) {
-          proxy.web(req, res, { target : 'http://localhost:3010' });
+          proxy.web(req, res, { target : 'http://protobox.io' });
         })
         .done(function () {
           db.close();
@@ -82,7 +82,7 @@ http.createServer(function (req, res) {
     });
   } else {
     //Redirect to Scopes homepage
-    proxy.web(req, res, { target: 'http://localhost:3010' });
+    proxy.web(req, res, { target: 'http://protobox.io' });
   }
 }).listen(4000);
 
