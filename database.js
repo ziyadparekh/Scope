@@ -134,3 +134,16 @@ exports.findAllAppsInCollection = function (collectionString, db) {
   });
   return deferred.getPromise();
 };
+
+exports.saveNewRepoToCollection = function (newRepo, collectionString, db) {
+  var collection = db.collection(collectionString);
+  var deferred = mkDeferred();
+  collection.insert(newRepo, function (err, result){
+    if (err) {
+      deferred.reject(err);
+    } else {
+      deferred.resolve(err);
+    }
+  });
+  return deferred.getPromise();
+};

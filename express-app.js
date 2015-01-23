@@ -9,6 +9,7 @@ var middle 			= require('./middle');
 var app = express();
 
 var auth = middle.authenticate;
+var authApp = middle.authenticateApp;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -52,6 +53,17 @@ app.put('/user', auth, user.put);
  * @raw: curl -X DELETE -u "ziyadparekh:123456" http://localhost:3010/user
 */
 app.delete('/user', auth, user.delete);
+
+var _app_ = require('./appController');
+
+app.post('/apps/:appname', auth, _app_.post);
+app.post('/apps', auth, _app_.post);
+
+// app.put('/apps/:appname', auth, authApp, _app_.put);
+// app.put('/apps', auth, authApp, _app_.put);
+
+app.del('/apps/:appname', auth, authApp, _app_.delete);
+app.del('/apps', auth, authApp, _app_.delete);
 
 app.listen(3010);
 
