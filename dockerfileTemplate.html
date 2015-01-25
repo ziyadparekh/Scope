@@ -1,0 +1,22 @@
+FROM ubuntu:14.04
+
+# make sure apt is up to date
+RUN apt-get update
+
+# install nodejs and npm
+RUN apt-get install -y nodejs npm
+
+# add source files
+ADD . /var/www
+
+# set the working directory to run commands from
+WORKDIR /var/www
+
+# install the dependencies
+RUN npm install
+
+# expose the port so host can have access
+EXPOSE <%= obj.port %>
+
+# run this after the container has been instantiated
+CMD ["nodejs", "<%= obj.start %>"]

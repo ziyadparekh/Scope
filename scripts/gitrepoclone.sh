@@ -44,23 +44,23 @@ if [ -f "$hook" ]; then
     rm $hook
 fi
 
-if [ -f ./.gitmodules ]; then
-    echo "Found git submodules, updating them now..."
-    git submodule init;
-    git submodule update;
-fi
+# if [ -f ./.gitmodules ]; then
+#     echo "Found git submodules, updating them now..."
+#     git submodule init;
+#     git submodule update;
+# fi
 
-if [ -f ./package.json ]; then
-    echo "Updating npm modules..."
-    npm install
-fi
+# if [ -f ./package.json ]; then
+#     echo "Updating npm modules..."
+#     npm install
+# fi
 
 cd $OLD_PWD
 
 echo "Did a bunch of stuff i have no idea what"
 
-# echo "Attempting to restart your app: ${gitdir}"
-# curl "http://127.0.0.1:4001/app_restart?repo_id=${gitdir}&restart_key=${SECRETKEY}" 2>/dev/null
+echo "Attempting to restart your app: ${appdir}"
+curl -X GET "http://localhost:3010/apps/restart?repo_id=${appdir}&restart_key=${SECRETKEY}"
 # echo ""
 # echo "App restarted.."
 # echo ""

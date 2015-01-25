@@ -147,3 +147,30 @@ exports.saveNewRepoToCollection = function (newRepo, collectionString, db) {
   });
   return deferred.getPromise();
 };
+
+exports.removeNodeRepoFromRepos = function (appname, collectionString, db) {
+  var collection = db.collection(collectionString);
+  var deferred = mkDeferred();
+  collection.remove({ appname : appname }, function (err, result) {
+    if (err) {
+      deferred.reject(err);
+    } else {
+      deferred.resolve(result);
+    }
+  });
+  return deferred.getPromise();
+};
+
+exports.findNodeAppByRepoId = function (repoID, collectionString, db) {
+  var collection = db.collection(collectionString);
+  var deferred = mkDeferred();
+  collection.findOne({repoID : repoID}, function (err, result) {
+    if (err) {
+      deferred.reject(err);
+    } else {
+      console.log(result);
+      deferred.resolve(result);
+    }
+  });
+  return deferred.getPromise();
+};

@@ -1,15 +1,63 @@
 'use strict';
 
 var MongoClient = require('mongodb').MongoClient;
+var ObjectID = require('mongodb').ObjectID;
 var database = require('./database');
 var config = require('./config');
 var util = require('util');
 var path = require('path');
 var helpers = require('./helpers');
-var exec = require('child_process').exec
+var DockerFile = require('./generateDockerfile');
+var exec = require('child_process').exec;
+var execFile = require('child_process').execFile;
 var url = config.db_url;
 var AppController = module.exports;
 
+
+AppController.restart = function (req, res, next) {
+    var repoID = req.body.repo_id;
+    if (!repoID) {
+        repoID = req.query.repo_id;
+    };
+    var repoObjectId = ObjectID(repoID);
+    MongoClient.connect(url, function (err, db) {
+        if (err) {
+            util.puts(err.message)
+            res.json({
+                status: 'Internal Server Error'
+            }, 500);
+        };
+        database.findNodeAppByRepoId(repoObjectId, 'repos', db)
+            .then(function (repoObject) {
+                var appname = repoObject.appname;
+                database.findNodeAppByName(appname, 'apps', db)
+                    .then(function (appObject) {
+                        var dockerObject = {
+                            start: appObject.start,
+                            port: appObject.port,
+                            app: {
+                                username: appObject.username,
+                                repoID: appObject.repoID.toString()
+                            }
+                        };
+                        var dockerFile = new DockerFile(dockerObject);
+                        dockerFile.compileTemplate();
+                        dockerFile.writeDockerFile();
+                        var appUserHome = path.join(config.apps_home_dir, appObject.username, appObject.repoID.toString());
+                        execFile(config.app_dir + '/startdocker.sh', [appUserHome], function (err, stdout, stderr) {
+                            if (err) util.puts('git setup err %s', err);
+                            if (stdout.length > 0) util.puts('gitsetup stdout %s', stdout);
+                            if (stderr.length > 0) util.puts('gitsetup stderr %s', stderr);
+                        });
+
+                        res.json({
+                            status: 'success',
+                            message: 'restarted your app'
+                        }, 200);
+                    });
+            });
+    });
+}
 
 AppController.delete = function (req, res, next) {
     var appname = req.body.appname;
@@ -33,18 +81,26 @@ AppController.delete = function (req, res, next) {
                             var appGitHome = path.join(config.git_home_dir, app.username, app.repoID.toString());
                             //NEED TO STOP THE APP AS WELL WILL DO THAT WHEN I FIGURE OUT HOW TO START THE APP HAHA
                             exec(config.app_dir + '/scripts/removeapp.js ' + appUserHome + ' ' + appGitHome);
-                            res.json({
-                                status: 'success',
-                                message: 'successfully removed your app ' + appname
-                            }, 200);
+                            database.removeNodeRepoFromRepos(appname, 'repos', db)
+                                .then(function () {
+                                    res.json({
+                                        status: 'success',
+                                        message: 'successfully removed your app ' + appname
+                                    }, 200);        
+                                }).fail(function (err) {
+                                    res.json({
+                                        status: 'failure',
+                                        message: err.message
+                                    }, 500);        
+                                }).done(function () {
+                                    db.close();
+                                });
                         }).fail(function (err) {
                             res.json({
                                 status: 'failure',
                                 message: err.message
                             }, 500);
-                        }).done(function () {
-                            db.close();
-                    });
+                        });
                 } else {
                     res.json({
                         status: 'failure',
