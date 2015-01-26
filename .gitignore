@@ -2,3 +2,5 @@ node_modules
 apps/*
 awselasticcloudcomputekeypair.pem
 protoboxkeypair.pem
+git/*
+app/*
