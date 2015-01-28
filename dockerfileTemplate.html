@@ -12,6 +12,8 @@ ADD . /var/www
 # set the working directory to run commands from
 WORKDIR /var/www
 
+ENV PORT <%= obj.port %>
+
 # install the dependencies
 RUN npm install
 

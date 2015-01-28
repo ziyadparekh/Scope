@@ -57,6 +57,8 @@ app.delete('/user', auth, user.delete);
 var _app_ = require('./appController');
 
 app.get('/apps/restart', _app_.restart);
+app.post('/apps/stop', auth, authApp, _app_.stop);
+app.post('/apps/start', auth, authApp, _app_.start);
 
 
 app.post('/apps/:appname', auth, _app_.post);
@@ -65,8 +67,8 @@ app.post('/apps', auth, _app_.post);
 // app.put('/apps/:appname', auth, authApp, _app_.put);
 // app.put('/apps', auth, authApp, _app_.put);
 
-app.del('/apps/:appname', auth, authApp, _app_.delete);
-app.del('/apps', auth, authApp, _app_.delete);
+app.delete('/apps/:appname', auth, authApp, _app_.delete);
+app.delete('/apps', auth, authApp, _app_.delete);
 
 
 app.listen(3010);

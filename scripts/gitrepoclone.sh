@@ -44,11 +44,11 @@ if [ -f "$hook" ]; then
     rm $hook
 fi
 
-# if [ -f ./.gitmodules ]; then
-#     echo "Found git submodules, updating them now..."
-#     git submodule init;
-#     git submodule update;
-# fi
+if [ -f ./.gitmodules ]; then
+    echo "Found git submodules, updating them now..."
+    git submodule init;
+    git submodule update;
+fi
 
 # if [ -f ./package.json ]; then
 #     echo "Updating npm modules..."
@@ -57,14 +57,11 @@ fi
 
 cd $OLD_PWD
 
-echo "Did a bunch of stuff i have no idea what"
+echo "Attempting to restart your app: ${gitdir}"
+curl -X GET "http://localhost:3010/apps/restart?repo_id=${gitdir}&restart_key=${SECRETKEY}"
+echo ""
+echo "App restarted.."
+echo ""
+echo "  \m/ Nodester out \m/"
 
-echo "Attempting to restart your app: ${appdir}"
-curl -X GET "http://localhost:3010/apps/restart?repo_id=${appdir}&restart_key=${SECRETKEY}"
-# echo ""
-# echo "App restarted.."
-# echo ""
-# echo "  \m/ Nodester out \m/"
-
-#PORT=4010 supervisor app.js
 exit 0;

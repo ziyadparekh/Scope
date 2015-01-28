@@ -11,14 +11,41 @@ var DockerFile = require('./generateDockerfile');
 var exec = require('child_process').exec;
 var execFile = require('child_process').execFile;
 var url = config.db_url;
+var resHelper = require('./resHelper');
+var shellHelpers = require('./shellHelpers');
 var AppController = module.exports;
 
+
+AppController.start = function (req, res, next) {
+    var app = req.app;
+    helpers.getDb().then(function (db) {
+        database.updateApp(app, {running : true }, 'apps', db).then(function (result) {
+            shellHelpers.startApp(app).then(function () {
+                db.close();
+                resHelper.sendSuccess(res, "App successfully restarted");
+            }).fail(function (err) { resHelper.send500(res, err.message) });
+        }).fail(function (err) { resHelper.send500(res, err.message) });
+    }).fail(function(err) { resHelper.send500(res, err.message) });
+};
+
+AppController.stop = function (req, res, next) {
+    var app = req.app;
+    helpers.getDb().then(function (db) {
+        database.updateApp(app, {running : false}, 'apps', db).then(function (result) {
+            shellHelpers.stopApp(app).then(function () {
+                db.close();
+                resHelper.sendSuccess(res, 'App successfully stopped');
+            }).fail(function (err) { resHelper.send500(res, err.message )});
+        }).fail(function (err) { resHelper.send500(res, err.message )});
+    }).fail(function (err) { resHelper.send500(res, err.message )});
+};
 
 AppController.restart = function (req, res, next) {
     var repoID = req.body.repo_id;
     if (!repoID) {
         repoID = req.query.repo_id;
     };
+    console.log(repoID);
     var repoObjectId = ObjectID(repoID);
     MongoClient.connect(url, function (err, db) {
         if (err) {
@@ -44,7 +71,7 @@ AppController.restart = function (req, res, next) {
                         dockerFile.compileTemplate();
                         dockerFile.writeDockerFile();
                         var appUserHome = path.join(config.apps_home_dir, appObject.username, appObject.repoID.toString());
-                        execFile(config.app_dir + '/startdocker.sh', [appUserHome], function (err, stdout, stderr) {
+                        execFile(config.app_dir + '/startdocker.sh', [appUserHome, appObject.username, appObject.appname, appObject.port], function (err, stdout, stderr) {
                             if (err) util.puts('git setup err %s', err);
                             if (stdout.length > 0) util.puts('gitsetup stdout %s', stdout);
                             if (stderr.length > 0) util.puts('gitsetup stderr %s', stderr);

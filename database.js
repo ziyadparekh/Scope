@@ -43,6 +43,20 @@ exports.updateObjectInCollection = function (object, collectionString, db) {
   return deferred.getPromise();
 };
 
+exports.updateApp = function (object, attribute, collectionString, db) {
+  var collection = db.collection(collectionString);
+  var deferred = mkDeferred();
+  collection.update({ appname : object.appname },
+    {$set : attribute}, function (err, result) {
+      if (err) {
+        deferred.reject(err);
+      } else {
+        deferred.resolve(result);
+      }
+    });
+  return deferred.getPromise();
+};
+
 exports.removeObjectFromCollection = function (object, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();

@@ -5,22 +5,12 @@ var cnfg = require("./config");
 var fs = require('fs');
 var path = require('path');
 
-// var config = {
-// 	start: 'index.js',
-// 	port: 3001,
-// 	app:{
-// 		username:'ziyadparekh',
-// 		repoID: 54321
-// 	}
-// };
-
 var Docker = function (options) {
 	_.each(options, function (val, key) {
 		this[key] = val;
 	}, this);
 
 	this.templateVars = options;
-	//this.template = Template['dockerfile'];
 }
 
 Docker.prototype.compileTemplate = function() {
@@ -37,9 +27,5 @@ Docker.prototype.writeDockerFile = function() {
 	var fullPath = path.join(appDir, userDir, repoDir);
 	fs.writeFileSync(fullPath + '/Dockerfile', this.dockerfile);
 };
-
-// var docker = new Docker(config);
-// docker.compileTemplate();
-// docker.writeDockerFile();
 
 module.exports = Docker;
