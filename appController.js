@@ -40,6 +40,20 @@ AppController.stop = function (req, res, next) {
     }).fail(function (err) { resHelper.send500(res, err.message )});
 };
 
+AppController.reboot = function (req, res, next) {
+  var app = req.app;
+  helpers.getDb.then(function (db) {
+    database.updateApp(app, { running : true }, 'apps', db).then(function (result) {
+      helpers.writeDockerFile(app).then(function () {
+        shellHelpers.buildDocker(app).then(function () {
+          db.close();
+          resHelper.sendSuccess(res, "App successfully restarted");
+        }).fail(function (err) { resHelper.send500(res, err.message )});
+      }).fail(function (err) { resHelper.send500(res, err.message )});
+    }).fail(function (err) { resHelper.send500(res, err.message )});
+  }).fail(function (err) { resHelper.send500(res, err.message )});
+};
+
 AppController.restart = function (req, res, next) {
     var repoID = req.body.repo_id;
     if (!repoID) {
@@ -113,12 +127,12 @@ AppController.delete = function (req, res, next) {
                                     res.json({
                                         status: 'success',
                                         message: 'successfully removed your app ' + appname
-                                    }, 200);        
+                                    }, 200);
                                 }).fail(function (err) {
                                     res.json({
                                         status: 'failure',
                                         message: err.message
-                                    }, 500);        
+                                    }, 500);
                                 }).done(function () {
                                     db.close();
                                 });

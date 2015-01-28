@@ -10,6 +10,7 @@ var app = express();
 
 var auth = middle.authenticate;
 var authApp = middle.authenticateApp;
+var findApp = middle.findApp;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -56,7 +57,7 @@ app.delete('/user', auth, user.delete);
 
 var _app_ = require('./appController');
 
-app.get('/apps/restart', _app_.restart);
+app.get('/apps/reboot', findApp, _app_.reboot);
 app.post('/apps/stop', auth, authApp, _app_.stop);
 app.post('/apps/start', auth, authApp, _app_.start);
 

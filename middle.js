@@ -5,7 +5,22 @@ var MongoClient = require('mongodb').MongoClient;
 var util = require('util');
 var helpers = require('./helpers');
 var config = require('./config');
+var resHelper = require('./resHelper');
 var url = config.db_url;
+
+var findApp = function (req, res, next) {
+  if (!req.body.secret || !req.body.repoId) {
+    return resHelper.send401(res, "Missing Params");
+  }
+  var repoId = req.body.repoId;
+  helpers.getDb().then(function (db) {
+    database.findNodeAppByRepoId(repoId, 'apps', db).then(function (app) {
+      req.app = app;
+      db.close();
+      next();
+    }).fail(function (err) { resHelper.send401(res, 'App not found'); });
+  }).fail(function (er) { resHelper.send500(res, err.message )});
+};
 
 var authenticate = function (req, res, next) {
 	var basicauth = req.headers.authorization;

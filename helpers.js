@@ -22,3 +22,8 @@ exports.getDb = function () {
 	});
 	return def.getPromise();
 };
+
+exports.writeDockerFile = function (app) {
+
+
+}
