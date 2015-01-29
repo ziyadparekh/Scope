@@ -10,7 +10,9 @@ var app = express();
 
 var auth = middle.authenticate;
 var authApp = middle.authenticateApp;
-var findApp = middle.findApp;
+var findAppByRepoId = middle.findAppByRepoId;
+var validateAppRequest = middle.validateAppRequest;
+var doesAppExist = middle.doesAppExist;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -57,13 +59,13 @@ app.delete('/user', auth, user.delete);
 
 var _app_ = require('./appController');
 
-app.get('/apps/reboot', findApp, _app_.reboot);
+app.get('/apps/reboot', findAppByRepoId, _app_.reboot);
 app.post('/apps/stop', auth, authApp, _app_.stop);
 app.post('/apps/start', auth, authApp, _app_.start);
 
 
-app.post('/apps/:appname', auth, _app_.post);
-app.post('/apps', auth, _app_.post);
+app.post('/apps/:appname', auth, validateAppRequest, doesAppExist, _app_.post);
+app.post('/apps', auth, validateAppRequest, doesAppExist, _app_.post);
 
 // app.put('/apps/:appname', auth, authApp, _app_.put);
 // app.put('/apps', auth, authApp, _app_.put);
