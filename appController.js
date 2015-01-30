@@ -68,7 +68,8 @@ AppController.reboot = function (req, res, next) {
         shellHelpers.buildDocker(app).then(function (logs) {
             database.updateApp(app, {
                 appcontainer: app.appname,
-                appimage: app.appuser + "/" + app.appname
+                appimage: app.appuser + "/" + app.appname,
+                appupdated: new Date()
             }, 'apps', db).then(function () {
                 db.close();
                 util.puts(logs);

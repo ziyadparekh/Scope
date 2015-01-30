@@ -31,5 +31,19 @@ Subdomains can be tested by editing /etc/hosts like this:
 - curl -X DELETE -u "testuser:123" -d "appname=test" http://api.localhost:4000/apps
 
 # TODO
+- Secure Mongodb
+- Add git-enforce-directory script
+- Refactor UserController
+- Create Feed Controller
+	- New apps
+	- Updated apps
+	- Trending apps
+	- Categories ?
+	- Most stars
+- Create App star and unstar
 
-Need to figure out how to automatically configure the port to the listening port
+FUTURE
+- Create User follow and unfollow
+- Create User feed
+- Command line interface
+- Front End interface

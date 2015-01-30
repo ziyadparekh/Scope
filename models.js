@@ -8,5 +8,7 @@ exports.defualtAppModel = {
 	appuser			: "",
 	appcontainer	: "",
 	appimage		: "",
+	appcreated		: "",
+	appupdated		: "",
 	apprunning		: false
 };

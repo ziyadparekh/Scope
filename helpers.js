@@ -46,11 +46,13 @@ exports.formatApp = function (appname, start, user, port) {
 	var dir = path.join(config.git_home_dir, user.username, appname + '.git');
 	var gitRepo = config.gituser + "@" + config.git_dom + ":" + dir;
 	var app = _.extend(AppModel, {
-		appname  : appname,
-		appstart : start,
-		appuser  : user.username,
-		appport  : port + 1,
-		apprepo  : gitRepo
+		appname  	: appname,
+		appstart 	: start,
+		appuser  	: user.username,
+		appport  	: port + 1,
+		apprepo  	: gitRepo,
+		appupdated	: new Date(),
+		appcreated	: new Date()
 	});
 
 	def.resolve(app);
