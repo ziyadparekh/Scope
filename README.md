@@ -30,6 +30,9 @@ Subdomains can be tested by editing /etc/hosts like this:
 ### Delete node app
 - curl -X DELETE -u "testuser:123" -d "appname=test" http://api.localhost:4000/apps
 
+# BUGS
+- Remove app image and container on delete app and delete user
+
 # TODO
 - Secure Mongodb
 - Add git-enforce-directory script

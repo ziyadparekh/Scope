@@ -13,7 +13,7 @@ var ShellHelper = {};
 
 ShellHelper.stopApp = function (app) {
 	var def = deferred();
-	if (!app.apprunning) { 
+	if (!app.apprunning) {
 		def.resolve('App is already stopped');
 		return def.getPromise();
 	}
@@ -28,7 +28,7 @@ ShellHelper.stopApp = function (app) {
 
 ShellHelper.startApp = function (app) {
 	var def = deferred();
-	if (app.apprunning) { 
+	if (app.apprunning) {
 		def.resolve('App is already running');
 		return def.getPromise();
 	}
@@ -59,7 +59,7 @@ ShellHelper.buildDocker = function (app) {
 
 ShellHelper.dockerLogs = function (app) {
 	var def = deferred();
-	if (!app.apprunning) { 
+	if (!app.apprunning) {
 		def.resolve('App is not running');
 		return def.getPromise();
 	}
@@ -96,10 +96,10 @@ ShellHelper.setupGitRepo = function (app, user) {
 };
 
 ShellHelper.removeAppDir = function (app, user) {
-	var def = deferred();
-	var appUserHome = path.join(config.apps_home_dir, app.appuser, app.appname);
+	  var def = deferred();
+	  var appUserHome = path.join(config.apps_home_dir, app.appuser, app.appname);
     var appGitHome = path.join(config.git_home_dir, app.appuser, app.appname);
-    var cmd = shellCommands.removeapp + appUserHome + ' ' + appGitHome;
+    var cmd = shellCommands.removeapp + appUserHome + ' ' + appGitHome + ' ' + app.appcontainer + ' ' + app.appimage;
     util.format("remove app dir cmd %s", cmd);
     exec(cmd, function (err, stdout, stderr) {
         if (err) { def.reject(err.message); }

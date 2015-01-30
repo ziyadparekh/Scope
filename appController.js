@@ -103,12 +103,13 @@ AppController.post = function (req, res, next) {
 AppController.delete = function (req, res, next) {
     var user = req.user;
     var appname = req.appname.toLowerCase();
-    
+
     helpers.getDb().then(function (db) {
         database.findNodeAppByName(appname, 'apps', db).then(function (app) {
             database.removeNodeAppByName(appname, 'apps', db).then(function () {
                 shellHelpers.stopApp(app).then(function () {
                     shellHelpers.removeAppDir(app, user).then(function () {
+                        //Need to add method to remove the app container and app image
                         db.close();
                         resHelper.sendSuccess(res, "App successfully deleted");
                     }).fail(function (err) { resHelper.send500(res, err); })
