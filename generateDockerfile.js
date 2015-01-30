@@ -1,31 +1,34 @@
 'use strict';
 
 var _ = require('underscore');
-var cnfg = require("./config");
+var config = require("./config");
 var fs = require('fs');
 var path = require('path');
+var mkDeffered = require('./deferred');
 
-var Docker = function (options) {
-	_.each(options, function (val, key) {
-		this[key] = val;
-	}, this);
-
-	this.templateVars = options;
-}
-
-Docker.prototype.compileTemplate = function() {
-	var file = fs.readFileSync('dockerfileTemplate.html',{encoding : 'ascii'});
-	var renderedString = _.template(file);
-	this.dockerfile = renderedString(this.templateVars);
+exports.readDockerFile = function () {
+	var def = mkDeffered();
+	fs.readFile('dockerfileTemplate.html',{encoding : 'ascii'}, function (err, data) {
+		if (err) { def.reject(err) }
+		else { def.resolve(data); }
+	});
+	return def.getPromise();
 };
 
-Docker.prototype.writeDockerFile = function() {
-	var self = this;
-	var appDir = cnfg.apps_home_dir;
-	var userDir = this.app.username;
-	var repoDir = this.app.repoID.toString();
-	var fullPath = path.join(appDir, userDir, repoDir);
-	fs.writeFileSync(fullPath + '/Dockerfile', this.dockerfile);
+exports.renderDockerFile = function (data, app) {
+	var def = mkDeffered();
+	var renderedString = _.template(data);
+	var dockerfile = renderedString(app);
+	def.resolve(dockerfile);
+	return def.getPromise();
 };
 
-module.exports = Docker;
+exports.writeDockerFile = function (file, app) {
+	var def = mkDeffered();
+	var fullPath = path.join(config.apps_home_dir, app.appuser, app.appname);
+	fs.writeFile(fullPath + '/Dockerfile', file, function (err) {
+		if (err) { def.reject(err) }
+		else { def.resolve() };
+	});
+	return def.getPromise();
+};

@@ -12,13 +12,13 @@ ADD . /var/www
 # set the working directory to run commands from
 WORKDIR /var/www
 
-ENV PORT <%= obj.port %>
+ENV PORT <%= obj.appport %>
 
 # install the dependencies
 RUN npm install
 
 # expose the port so host can have access
-EXPOSE <%= obj.port %>
+EXPOSE <%= obj.appport %>
 
 # run this after the container has been instantiated
-CMD ["nodejs", "<%= obj.start %>"]
+CMD ["nodejs", "<%= obj.appstart %>"]

@@ -74,7 +74,7 @@ exports.findNodeAppByName = function (appname, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
   collection.findOne({ appname : appname }, function (err, result) {
-    if (err) {
+    if (err || !result) {
       deferred.reject(err);
     } else {
       deferred.resolve(result);
@@ -178,7 +178,7 @@ exports.removeNodeRepoFromRepos = function (appname, collectionString, db) {
 exports.findNodeAppByRepoId = function (repoID, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.findOne({repoID : repoID}, function (err, result) {
+  collection.findOne({appname : repoID}, function (err, result) {
     if (err) {
       deferred.reject(err);
     } else {

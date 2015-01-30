@@ -58,7 +58,7 @@ fi
 cd $OLD_PWD
 
 echo "Attempting to restart your app: ${gitdir}"
-curl -X GET "http://localhost:3010/apps/restart?repo_id=${gitdir}&restart_key=${SECRETKEY}"
+curl -X GET "http://localhost:3010/apps/reboot?repo_id=${gitdir}&restart_key=${SECRETKEY}"
 echo ""
 echo "App restarted.."
 echo ""
