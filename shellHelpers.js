@@ -48,13 +48,28 @@ ShellHelper.returnRenderedCmd = function (string, app) {
 ShellHelper.buildDocker = function (app) {
 	var def = deferred();
 	var appUserHome = path.join(config.apps_home_dir, app.appuser, app.appname);
-	var args = [appUserHome, app.username, app.appname, app.appport];
+	var args = [appUserHome, app.appuser, app.appname, app.appport];
 	execFile(config.app_dir + '/startdocker.sh', args, function (err, stdout, stderr) {
         if (err) { def.reject(err); }
         if (stdout.length) { def.resolve(stdout); }
         if (stderr.length) { def.resolve(stderr); }
     });
     return def.getPromise();
+};
+
+ShellHelper.dockerLogs = function (app) {
+	var def = deferred();
+	if (!app.apprunning) { 
+		def.resolve('App is not running');
+		return def.getPromise();
+	}
+	var cmd = ShellHelper.returnRenderedCmd(shellCommands.logs, app);
+	exec(cmd, function (err, stdout, stderr) {
+		if (err && err.length) { def.reject(err); }
+		if (stdout.length) { def.resolve(stdout); }
+		if (stderr.length) { def.resolve(stderr); }
+	});
+	return def.getPromise();
 };
 
 ShellHelper.setupGitRepo = function (app, user) {

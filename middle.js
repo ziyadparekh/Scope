@@ -8,6 +8,14 @@ var config = require('./config');
 var resHelper = require('./resHelper');
 var url = config.db_url;
 
+var doesStartExist = function (req, res, next) {
+	if (!req.body.start) {
+		return resHelper.send401(res, "Path to start file required");
+	};
+	req.start = req.body.start;
+	next();
+};
+
 var findAppByRepoId = function (req, res, next) {
   if (!req.query.restart_key || !req.query.repo_id) {
     return resHelper.send401(res, "Missing Params");
@@ -158,3 +166,4 @@ module.exports.authenticateApp	  = authenticateApp;
 module.exports.findAppByRepoId	  = findAppByRepoId;
 module.exports.validateAppRequest = validateAppRequest;
 module.exports.doesAppExist	  	  = doesAppExist;
+module.exports.doesStartExist	  = doesStartExist;

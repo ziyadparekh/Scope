@@ -16,6 +16,26 @@ var shellHelpers = require('./shellHelpers');
 var AppController = module.exports;
 
 
+AppController.logs = function (req, res, next) {
+    var app = req.app;
+    var user = req.user;
+
+    shellHelpers.dockerLogs(app).then(function (logs) {
+        resHelper.sendSuccess(res, "App logs for " + app.appname, logs);
+    }).fail(function (err) { resHelper.send500(res, err.message); });
+};
+
+AppController.update = function (req, res, next) {
+    var app = req.app;
+    var start = req.start;
+    helpers.getDb().then(function (db) {
+        database.updateApp(app, { appstart : start}, 'apps', db).then(function (result) {
+            db.close();
+            resHelper.sendSuccess(res, "App start file successfully updated");
+        }).fail(function (err) { resHelper.send500(res, err.message); })
+    }).fail(function (err) { resHelper.send500(res, err.message); });
+};
+
 AppController.start = function (req, res, next) {
     var app = req.app;
     helpers.getDb().then(function (db) {
@@ -23,8 +43,8 @@ AppController.start = function (req, res, next) {
             shellHelpers.startApp(app).then(function () {
                 db.close();
                 resHelper.sendSuccess(res, "App successfully restarted");
-            }).fail(function (err) { resHelper.send500(res, err.message) });
-        }).fail(function (err) { resHelper.send500(res, err.message) });
+            }).fail(function (err) { resHelper.send500(res, err.message); })
+        }).fail(function (err) { resHelper.send500(res, err.message); })
     }).fail(function(err) { resHelper.send500(res, err.message) });
 };
 
@@ -35,9 +55,9 @@ AppController.stop = function (req, res, next) {
             shellHelpers.stopApp(app).then(function () {
                 db.close();
                 resHelper.sendSuccess(res, 'App successfully stopped');
-            }).fail(function (err) { resHelper.send500(res, err.message )});
-        }).fail(function (err) { resHelper.send500(res, err.message )});
-    }).fail(function (err) { resHelper.send500(res, err.message )});
+            }).fail(function (err) { resHelper.send500(res, err.message ); })
+        }).fail(function (err) { resHelper.send500(res, err.message ); })
+    }).fail(function (err) { resHelper.send500(res, err.message ); });
 };
 
 AppController.reboot = function (req, res, next) {
@@ -46,13 +66,18 @@ AppController.reboot = function (req, res, next) {
     database.updateApp(app, { apprunning : true }, 'apps', db).then(function (result) {
       helpers.writeDockerFile(app).then(function () {
         shellHelpers.buildDocker(app).then(function (logs) {
-          db.close();
-          util.puts(logs);
-          resHelper.sendSuccess(res, "App successfully restarted");
-        }).fail(function (err) { resHelper.send500(res, err.message )});
-      }).fail(function (err) { resHelper.send500(res, err.message )});
-    }).fail(function (err) { resHelper.send500(res, err.message )});
-  }).fail(function (err) { resHelper.send500(res, err.message )});
+            database.updateApp(app, {
+                appcontainer: app.appname,
+                appimage: app.appuser + "/" + app.appname
+            }, 'apps', db).then(function () {
+                db.close();
+                util.puts(logs);
+                resHelper.sendSuccess(res, "App successfully restarted");
+            }).fail(function (err) { resHelper.send500(res, err.message );})
+        }).fail(function (err) { resHelper.send500(res, err.message );})
+      }).fail(function (err) { resHelper.send500(res, err.message );})
+    }).fail(function (err) { resHelper.send500(res, err.message );})
+  }).fail(function (err) { resHelper.send500(res, err.message );});
 };
 
 AppController.post = function (req, res, next) {
@@ -91,54 +116,3 @@ AppController.delete = function (req, res, next) {
         }).fail(function (err) { resHelper.send500(res, err.message); })
     }).fail(function (err) { resHelper.send500(res, err.message); });
 };
-
-AppController.restart = function (req, res, next) {
-    var repoID = req.body.repo_id;
-    if (!repoID) {
-        repoID = req.query.repo_id;
-    };
-    console.log(repoID);
-    var repoObjectId = ObjectID(repoID);
-    MongoClient.connect(url, function (err, db) {
-        if (err) {
-            util.puts(err.message)
-            res.json({
-                status: 'Internal Server Error'
-            }, 500);
-        };
-        database.findNodeAppByRepoId(repoObjectId, 'repos', db)
-            .then(function (repoObject) {
-                var appname = repoObject.appname;
-                database.findNodeAppByName(appname, 'apps', db)
-                    .then(function (appObject) {
-                        var dockerObject = {
-                            start: appObject.start,
-                            port: appObject.port,
-                            app: {
-                                username: appObject.username,
-                                repoID: appObject.repoID.toString()
-                            }
-                        };
-                        var dockerFile = new DockerFile(dockerObject);
-                        dockerFile.compileTemplate();
-                        dockerFile.writeDockerFile();
-                        var appUserHome = path.join(config.apps_home_dir, appObject.username, appObject.repoID.toString());
-                        execFile(config.app_dir + '/startdocker.sh', [appUserHome, appObject.username, appObject.appname, appObject.port], function (err, stdout, stderr) {
-                            if (err) util.puts('git setup err %s', err);
-                            if (stdout.length > 0) util.puts('gitsetup stdout %s', stdout);
-                            if (stderr.length > 0) util.puts('gitsetup stderr %s', stderr);
-                        });
-
-                        res.json({
-                            status: 'success',
-                            message: 'restarted your app'
-                        }, 200);
-                    });
-            });
-    });
-}
-
-
-
-
-
