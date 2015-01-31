@@ -36,7 +36,7 @@ app.get('/status', function (req, res, next) {
 	}, 200);
 });
 
-var user = require('./user');
+var user = require('./UserController');
 
 /*
  * New user account registration
@@ -61,7 +61,7 @@ app.put('/user', auth, user.update);
 */
 app.delete('/user', auth, user.delete);
 
-var _app_ = require('./appController');
+var _app_ = require('./AppController');
 
 app.get('/apps/reboot', findAppByRepoId, _app_.reboot);
 app.post('/apps/stop', auth, authApp, _app_.stop);
