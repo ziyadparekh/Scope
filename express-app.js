@@ -14,6 +14,7 @@ var findAppByRepoId = middle.findAppByRepoId;
 var validateAppRequest = middle.validateAppRequest;
 var doesAppExist = middle.doesAppExist;
 var doesStartExist = middle.doesStartExist;
+var ensureAppExists = middle.ensureAppExists;
 
 var validateUserRequest = middle.validateUserRequest;
 var doesUserExist = middle.doesUserExist;
@@ -47,6 +48,8 @@ var user = require('./UserController');
  */
 app.post('/user', validateUserRequest, doesUserExist, user.post);
 
+app.get('/user/apps', auth, user.listApps);
+
 /*
  * Edit your user account
  * @Public: false, only with authentication
@@ -67,6 +70,9 @@ app.get('/apps/reboot', findAppByRepoId, _app_.reboot);
 app.post('/apps/stop', auth, authApp, _app_.stop);
 app.post('/apps/start', auth, authApp, _app_.start);
 
+app.post('/apps/star', auth, ensureAppExists, _app_.star);
+app.post('/apps/unstar', auth, ensureAppExists, _app_.unstar);
+
 
 app.post('/apps/:appname', auth, validateAppRequest, doesAppExist, _app_.post);
 app.post('/apps', auth, validateAppRequest, doesAppExist, _app_.post);
@@ -75,12 +81,19 @@ app.put('/apps', auth, authApp, doesStartExist, _app_.update);
 
 app.get('/apps/logs', auth, authApp, _app_.logs);
 
+
 // app.put('/apps/:appname', auth, authApp, _app_.put);
 // app.put('/apps', auth, authApp, _app_.put);
 
 app.delete('/apps/:appname', auth, authApp, _app_.delete);
 app.delete('/apps', auth, authApp, _app_.delete);
 
+
+var feed = require('./FeedController');
+
+app.get('/list/latest', feed.latestApps);
+app.get('/list/updated', feed.latestUpdatedApps);
+app.get('/list/trending', feed.trendingApps);
 
 app.listen(3010);
 

@@ -121,3 +121,41 @@ AppController.delete = function (req, res, next) {
         }).fail(function (err) { resHelper.send500(res, err.message); })
     }).fail(function (err) { resHelper.send500(res, err.message); });
 };
+
+AppController.star = function (req, res, next) {
+    var user = req.user;
+    var appname = req.appname;
+    var app = req.app;
+
+    if (app.appstars.indexOf(user.username) > -1) {
+        return resHelper.send401(res, 'You have already starred this app');
+    };
+
+    helpers.getDb().then(function (db) {
+        database.addUserToAppStars(appname, user, 'apps', db).then(function (app_res) {
+            database.addAppToUserStars(user, appname, 'users', db).then(function (user_res) {
+                db.close();
+                resHelper.sendSuccess(res, 'success', app_res.length);
+            }).fail(function (err) { resHelper.send500(res, err); })
+        }).fail(function (err) { resHelper.send500(res, err); })
+    }).fail(function (err) { resHelper.send500(res, err); });
+};
+
+AppController.unstar = function (req, res, next) {
+    var user = req.user;
+    var appname = req.appname;
+    var app = req.app;
+
+    if (app.appstars.indexOf(user.username) === -1) {
+        return resHelper.send401(res, 'You never starred this app');
+    };
+
+    helpers.getDb().then(function (db) {
+        database.removeUserFromAppStars(appname, user, 'apps', db).then(function (app_res) {
+            database.removeAppFromUserStars(user, appname, 'users', db).then(function (user_res) {
+                db.close();
+                resHelper.sendSuccess(res, 'success', app_res.length);
+            }).fail(function (err) { resHelper.send500(res, err); })
+        }).fail(function (err) { resHelper.send500(res, err); })
+    }).fail(function (err) { resHelper.send500(res, err); });
+};

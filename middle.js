@@ -57,6 +57,23 @@ var doesAppExist = function (req, res, next) {
 	}).fail(function (err) { resHelper.send500(res, err.message )});
 };
 
+var ensureAppExists = function (req, res, next) {
+	var appname = req.body.appname;
+	
+	if (!appname) {
+		return resHelper.send401(res, 'You must specify an appname');
+	};
+
+	helpers.getDb().then(function (db) {
+		database.findNodeAppByName(appname, 'apps', db).then(function (result) {
+			req.app = result;
+			req.appname = appname;
+			db.close();
+			next();
+		}).fail(function (err) { resHelper.send500(res, "No App found"); })
+	}).fail(function (err) { resHelper.send500(res, err.message); })
+};
+
 var doesUserExist = function (req, res, next) {
 	var username = req.username;
 	helpers.getDb().then(function (db) {
@@ -206,3 +223,4 @@ module.exports.doesAppExist	  	  	= doesAppExist;
 module.exports.doesStartExist	  	= doesStartExist;
 module.exports.validateUserRequest	= validateUserRequest;
 module.exports.doesUserExist	  	= doesUserExist;
+module.exports.ensureAppExists	  	= ensureAppExists;

@@ -10,6 +10,7 @@ exports.defaultAppModel = {
 	appimage		: "",
 	appcreated		: "",
 	appupdated		: "",
+	appstars		: [],
 	apprunning		: false
 };
 
@@ -18,5 +19,5 @@ exports.defaultUserModel = {
 	userpassword: "",
 	useremail: "",
 	userapps: [],
-	userfavorites: []
+	userstarred: []
 };

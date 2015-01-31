@@ -16,6 +16,18 @@ var User = {};
 var UserController = module.exports;
 
 
+UserController.listApps = function (req, res, next) {
+    var user = req.user;
+
+    helpers.getDb().then(function (db) {
+        database.getUserPortfolio(user, 'apps', db).then(function (result) {
+            var message = result.length + ' apps found';
+            resHelper.sendSuccess(res, message, result);
+        }).fail(function (err) { resHelper.send500(res, err.message); })
+    }).fail(function (err) { resHelper.send500(res, err.message);});
+};
+
+
 UserController.post = function (req, res, next) {
     console.log('NEW USER');
 
