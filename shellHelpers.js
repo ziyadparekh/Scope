@@ -11,6 +11,28 @@ var util = require('util');
 
 var ShellHelper = {};
 
+ShellHelper.createUserDir = function (user) {
+	var def = deferred();
+	var cmd = config.app_dir + '/scripts/createUserDir.js ' + user.username;
+	exec(cmd, function (err, stdout, stderr) {
+		if (err && err.length) { def.reject(err); }
+        if (stdout.length) { def.resolve(stdout); }
+        if (stderr.length) { def.resolve(stderr); }
+	});
+	return def.getPromise();
+};
+
+ShellHelper.updateAuthKeys = function (user, key) {
+	var def = deferred();
+	var username = user.username;
+	var cmd = config.app_dir + '/scripts/updateAuthKeys.js ' + config.git_home_dir + '/' + username + ' "' + key + '"';
+	exec(cmd, function (err, stdout, stderr) {
+		if (err && err.length) { def.reject(err); }
+		else { def.resolve(); }
+	});
+	return def.getPromise();
+};
+
 ShellHelper.stopApp = function (app) {
 	var def = deferred();
 	if (!app.apprunning) {
@@ -96,10 +118,10 @@ ShellHelper.setupGitRepo = function (app, user) {
 };
 
 ShellHelper.removeAppDir = function (app, user) {
-	  var def = deferred();
-	  var appUserHome = path.join(config.apps_home_dir, app.appuser, app.appname);
+	var def = deferred();
+	var appUserHome = path.join(config.apps_home_dir, app.appuser, app.appname);
     var appGitHome = path.join(config.git_home_dir, app.appuser, app.appname);
-    var cmd = shellCommands.removeapp + appUserHome + ' ' + appGitHome + ' ' + app.appcontainer + ' ' + app.appimage;
+    var cmd = shellCommands.removeapp + appUserHome + ' ' + appGitHome;
     util.format("remove app dir cmd %s", cmd);
     exec(cmd, function (err, stdout, stderr) {
         if (err) { def.reject(err.message); }
@@ -107,6 +129,20 @@ ShellHelper.removeAppDir = function (app, user) {
         if (stderr.length) { def.resolve(stderr); }
     });
 
+    return def.getPromise();
+};
+
+ShellHelper.removeUserDir = function (user) {
+	var def = deferred();
+	var userAppDir = path.join(config.apps_home_dir, user.username);
+	var appGitHome = path.join(config.git_home_dir, user.username);
+	var cmd = shellCommands.removeuser + userAppDir + ' ' + appGitHome;
+	util.format("remove user dir cmd %s", cmd);
+	exec(cmd, function (err, stdout, stderr) {
+        if (err) { def.reject(err.message); }
+        if (stdout.length) { def.resolve(stdout); }
+        if (stderr.length) { def.resolve(stderr); }
+    });
     return def.getPromise();
 };
 

@@ -89,11 +89,14 @@ AppController.post = function (req, res, next) {
     helpers.getDb().then(function (db) {
         database.getNextAvailablePort('apps', db).then(function (lastSavedApp) {
             helpers.formatApp(appname, start, user, lastSavedApp.port).then(function (appObject) {
-                database.saveAppToNextPort(appObject, 'apps', db).then(function () {
-                    shellHelpers.setupGitRepo(appObject, user).then(function () {
-                        db.close();
-                        resHelper.sendSuccess(res, "App successfully created", appObject);
-                    }).fail(function (err) { resHelper.send500(res, err ); })
+                database.saveAppToNextPort(appObject, 'apps', db).then(function (result) {
+                    console.log(result);
+                    database.saveAppIdToUserPortfolio(result[0], user, 'users', db).then(function () {
+                        shellHelpers.setupGitRepo(appObject, user).then(function () {
+                            db.close();
+                            resHelper.sendSuccess(res, "App successfully created", appObject);
+                        }).fail(function (err) { resHelper.send500(res, err ); })
+                    }).fail(function (err) { resHelper.send500(res, err.message ); })
                 }).fail(function (err) { resHelper.send500(res, err.message); })
             }).fail(function (err) { resHelper.send500(res, err); })
         }).fail(function (err) { resHelper.send500(res, err.message); })

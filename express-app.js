@@ -15,6 +15,9 @@ var validateAppRequest = middle.validateAppRequest;
 var doesAppExist = middle.doesAppExist;
 var doesStartExist = middle.doesStartExist;
 
+var validateUserRequest = middle.validateUserRequest;
+var doesUserExist = middle.doesUserExist;
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -42,14 +45,14 @@ var user = require('./user');
  * @raw:  curl -X POST -d "user=ziyadparekh&password=123456&email=ziyad.parekh@gmail.com&rsakey=abcd" http://localhost:3010/user
  *        curl -X POST -d "user=me&password=123" http://localhost:4001/user
  */
-app.post('/user', user.post);
+app.post('/user', validateUserRequest, doesUserExist, user.post);
 
 /*
  * Edit your user account
  * @Public: false, only with authentication
  * @raw: curl -X PUT -u "ziyadparekh:123456" -d "password=test&rsakey=1234567" http://localhost:3010/user
  */
-app.put('/user', auth, user.put);
+app.put('/user', auth, user.update);
 
 /*
  * Delete your user account

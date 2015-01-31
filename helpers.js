@@ -7,13 +7,40 @@ var path = require('path');
 var docker = require('./generateDockerfile');
 var mkDeffered = require('./deferred');
 var database = require('./database');
-var AppModel = require('./models').defualtAppModel;
+var AppModel = require('./models').defaultAppModel;
+var UserModel = require('./models').defaultUserModel;
 var MongoClient = require('mongodb').MongoClient;
 var config = require('./config');
 var url = config.db_url;
 
 exports.md5 = function (string) {
 	return crypto.createHash('md5').update(string).digest('hex');
+};
+
+exports.isValidKey = function (key) {
+	var decoded, type, _ref;
+  	_ref = key.split(' '), type = _ref[0], key = _ref[1];
+  	if (!((type != null) && (key != null) && (type === 'ssh-rsa' || type === 'ssh-dss'))) {
+    	return false;
+  	}
+  	decoded = new Buffer(key, 'base64').toString('ascii');
+  	if (decoded.indexOf('ssh-rsa') === -1 && decoded.indexOf('ssh-dss') === -1) {
+    	return false;
+  	}
+  	return true;
+};
+
+exports.isValidUsername = function (username) {
+	if (username.match(/^[a-z0-9]+$/i) === null) {
+		return false;
+	} else {
+		return true;
+	}
+};
+
+exports.isValidPassword = function (password) {
+	 var truth = password && password.length < 1 ? false : true;
+	 return truth;
 };
 
 exports.getDb = function () {
@@ -56,6 +83,18 @@ exports.formatApp = function (appname, start, user, port) {
 	});
 
 	def.resolve(app);
+	return def.getPromise();
+};
+
+exports.formatUser = function (username, email, password) {
+	var def = mkDeffered();
+	var user = _.extend(UserModel, {
+		username 	: username,
+		useremail 	: email,
+		userpassword: password
+	});
+
+	def.resolve(user);
 	return def.getPromise();
 };
 

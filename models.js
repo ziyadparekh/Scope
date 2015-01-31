@@ -1,6 +1,6 @@
 'use strict';
 
-exports.defualtAppModel = {
+exports.defaultAppModel = {
 	appname 		: "",
 	appstart 		: "",
 	appport			: "",
@@ -11,4 +11,12 @@ exports.defualtAppModel = {
 	appcreated		: "",
 	appupdated		: "",
 	apprunning		: false
+};
+
+exports.defaultUserModel = {
+	username: "",
+	userpassword: "",
+	useremail: "",
+	userapps: [],
+	userfavorites: []
 };

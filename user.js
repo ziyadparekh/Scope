@@ -8,35 +8,30 @@ var helpers = require('./helpers');
 var _ = require('underscore');
 var exec = require('child_process').exec
 var url = config.db_url;
-var User = module.exports;
+var resHelper = require('./resHelper');
+var shellHelpers = require('./shellHelpers');
+var deferred = require("./deferred");
 
-var isValidKey = function (key) {
-  var decoded, type, _ref;
-  _ref = key.split(' '), type = _ref[0], key = _ref[1];
-  if (!((type != null) && (key != null) && (type === 'ssh-rsa' || type === 'ssh-dss'))) {
-    return false;
-  }
-  decoded = new Buffer(key, 'base64').toString('ascii');
-  if (decoded.indexOf('ssh-rsa') === -1 && decoded.indexOf('ssh-dss') === -1) {
-    return false;
-  }
-  return true;
-};
+var User = {};
+var UserController = module.exports;
+
 
 UserController.post = function (req, res, next) {
+    console.log('NEW USER');
+
     var username = req.username;
     var email = req.email;
-    var password = req.password;
-    var rsakey = req.rsakey;
+    var password = helpers.md5(req.password);
+    var rsakey = req.rsaKey;
 
-    helpers.formatUser(username, email, password, rsakey).then(function (userObject) {
+    helpers.formatUser(username, email, password).then(function (userObject) {
         var userDirPromise = shellHelpers.createUserDir(userObject);
         var rsakeyPromise = shellHelpers.updateAuthKeys(userObject, rsakey);
-        deferred.when(userDirPromise, rsakeyPromise).then(function () {
+        deferred.all(userDirPromise, rsakeyPromise).then(function () {
             helpers.getDb().then(function (db) {
                 database.addObjectToCollection(userObject, 'users', db).then(function (result) {
                     db.close();
-                    resHelper.sendSuccess(res, 'User account successfully created', _.omit(userObject, 'password'));
+                    resHelper.sendSuccess(res, 'User account successfully created', _.omit(userObject, 'userpassword'));
                 }).fail(function (err) { resHelper.send500(res, err.message); })
             }).fail(function (err) { resHelper.send500(res, err.message); })
         }).fail(function (err) { resHelper.send500(res, err.message); })
@@ -45,36 +40,52 @@ UserController.post = function (req, res, next) {
 
 UserController.update = function (req, res, next) {
     var user = req.user;
-    var newpass = req.password;
-    var rsakey = req.rsakey;
+    var newpass = req.body.password;
+    var rsakey = req.body.rsakey;
 
-    if (newpass) UserController._updatePassword(user, newpass);
-    else if (rsakey) UserController._updateRsaKey(user, rsakey);
+    if (!newpass && !rsakey) {
+        resHelper.send500(res, 'Need either a new password or rsa key');
+    };
+
+    if (newpass) UserController._updatePassword(user, newpass, res);
+    else if (rsakey) UserController._updateRsaKey(user, rsakey, res);
 };
 
-UserController._updatePassword = function (user, newpass) {
+UserController._updatePassword = function (user, newpass, res) {
+    console.log('UPDATE PASS');
+    console.log(user);
 
-    helpers.validatePassword(newpass).then(function () {
+    if(helpers.isValidPassword(newpass)) {
         helpers.getDb().then(function (db) {
-            database.updateObjectInCollection(user, { password : newpass }, 'users', db).then(function () {
+            database.updateObjectInCollection(user, { userpassword : helpers.md5(newpass) }, 'users', db).then(function () {
                 db.close();
                 resHelper.sendSuccess(res, 'Password successfully updated');
             }).fail(function (err) { resHelper.send500(res, err.message); })
-        }).fail(function (err) { resHelper.send500(res, err.message); })
-    }).fail(function (err) { resHelper.send500(res, err.message); });
+        }).fail(function (err) { resHelper.send500(res, err.message); });
+    } else {
+       resHelper.send500(res, 'Invalid Password'); 
+    }        
 };
 
-UserController._updateRsaKey = function (user, rsakey) {
+UserController._updateRsaKey = function (user, rsakey, res) {
+    console.log('UPDATE RSA KEY');
+    console.log(user);
 
-    helpers.validateRsaKey(rsakey).then(function () {
-        shellHelpers.updateAuthKeys(user, rsakey).then(function () {
+    if (helpers.isValidKey(rsakey)) {
+        var rsakeyPromise = shellHelpers.updateAuthKeys(user, rsakey);
+        deferred.all([rsakeyPromise]).then(function (result) {
+            console.log('asdasd');
             resHelper.sendSuccess(res, "RSA key successfully updated");
-        }).fail(function (err) { resHelper.send500(res, err.message); })
-    }).fail(function (err) { resHelper.send500(res, err.message); });
+        }).fail(function (err) { resHelper.send500(res, err.message); });
+    } else {
+        resHelper.send500(res, 'Invalid Key');
+    }
 };
 
 UserController.delete = function (req, res, next) {
     var user = req.user;
+    console.log('DELETE');
+    console.log(user);
 
     helpers.getDb().then(function (db) {
         database.getUserPortfolio(user, 'apps', db).then(function (result) {
@@ -87,9 +98,9 @@ UserController.delete = function (req, res, next) {
                 removeDirPromises.push(shellHelpers.removeAppDir(app));
                 //Need to add method to remove the app container and app image
             });
-            deferred.when(deleteAppPromises).then(function () {
-                deferred.when(stopAppPromises).then(function () {
-                    deferred.when(removeDirPromises).then(function () {
+            deferred.all(deleteAppPromises).then(function () {
+                deferred.all(stopAppPromises).then(function () {
+                    deferred.all(removeDirPromises).then(function () {
                         shellHelpers.removeUserDir(user).then(function () {
                             database.removeObjectFromCollection(user, 'users', db).then(function () {
                                 db.close();
@@ -101,160 +112,4 @@ UserController.delete = function (req, res, next) {
             }).fail(function (err) { resHelper.send500(res, err.message); })
         }).fail(function (err) { resHelper.send500(res, err.message); })
     }).fail(function (err) { resHelper.send500(res, err.message); });
-};
-
-User.delete = function (req, res, next) {
-    var user = req.user;
-    console.log(user);
-
-    MongoClient.connect(url, function (err, db) {
-        if (err) {
-            util.puts(err.message);
-            res.json({
-                status : 'Internal Server Error'
-            }, 500);
-        }
-        database.removeObjectFromCollection(user, 'users', db)
-            .then(function () {
-                res.json({
-                    status : 'success'
-                }, 200);
-            }).fail(function (err) {
-                res.json({
-                    status : 'failure',
-                    message : err.message
-                }, 500);
-            }).done(function () {
-                db.close();
-            });
-    });
-};
-
-User.put = function (req, res, next) {
-    var user = req.user;
-    var newpass = req.body.password;
-    var rsakey = req.body.rsakey;
-
-    if (newpass) {
-        if (newpass.length < 1) {
-            res.json({
-                status : 'failure - invalid password. must be atleast 1 character'
-            }, 400);
-            return true;
-        };
-        MongoClient.connect(url, function (err, db) {
-            var newUserObject;
-            if (err) {
-                util.puts(err);
-                res.json({
-                    status : 'Internal Server Error'
-                }, 500);
-                return;
-            }
-            newUserObject = {
-                username : user.username,
-                password : helpers.md5(newpass)
-            };
-            database.updateObjectInCollection(newUserObject, 'users', db)
-                .then(function (result) {
-                    res.json({
-                        status : 'success',
-                        message : 'password updated'
-                    }, 200);
-                }).fail(function (err) {
-                    res.json({
-                        status : 'failure',
-                        message : err.message
-                    });
-                }).done(function () {
-                    db.close();
-                });
-        });
-    } else if (rsakey) {
-        if (!isValidKey(rsakey)) {
-            res.json({
-                status : 'Failure',
-                message : 'Invalid rsa key'
-            });
-        } else {
-            exec(config.app_dir + '/scripts/updateAuthKeys.js ' + config.git_home_dir + '/' + user.username + ' "' + rsakey + '"');
-            res.json({
-                status : 'success',
-                message : "rsa key added"
-            });
-        }
-    };
-};
-
-User.post = function (req, res, next) {
-
-    var username = req.body.username;
-    var password = req.body.password;
-    var email = req.body.email;
-    var rsakey = req.body.rsakey;
-
-    if (password && password.length < 1) {
-        res.json({
-            status : 'failure - invalid password. must be atleast 1 character'
-        }, 400);
-        return true;
-    } else if (username.match(/^[a-z0-9]+$/i) === null) {
-        res.json({
-            status : 'failure - invalid username. must be alphanumeric'
-        }, 400);
-        return true;
-    } else {
-        MongoClient.connect(url, function (err, db) {
-            if (err) {
-                util.puts(err);
-                res.json({
-                    status : 'Internal Server Error'
-                }, 500);
-                return;
-            }
-            database.findSingleObjectInCollection(username, 'users', db)
-                .then(function (user) {
-                    var newUserObject;
-                    if (!user) {
-                        if (typeof rsakey === 'undefined' || !isValidKey(rsakey)) {
-                            res.json({
-                                status : 'failure - rsakey is invalid'
-                            }, 400);
-                        } else {
-                            exec(config.app_dir + '/scripts/updateAuthKeys.js ' + config.git_home_dir + '/' + username + ' "' + rsakey + '"');
-                            exec(config.app_dir + '/scripts/createUserDir.js ' + username, function (err, stdout, stderr) {
-                                console.log('stdout: ' + stdout);
-                                console.log('stderr: ' + stderr);
-                                if (err !== null) {
-                                  console.log('exec error: ' + err);
-                                }
-                            });
-                            newUserObject = {
-                                username : username,
-                                password : helpers.md5(password),
-                                email : email
-                            };
-                            database.addObjectToCollection(newUserObject, 'users', db)
-                                .then(function () {
-                                    res.json({
-                                        status: 'success'
-                                    }, 200);
-                                }).fail(function (err) {
-                                    res.json({
-                                        status : 'failed',
-                                        message : err.message
-                                    }, 500);
-                                }).done(function () {
-                                    db.close();
-                                });
-                        }
-                    } else {
-                        res.json({
-                            status: 'failure',
-                            message: 'account exists'
-                        }, 401);
-                    }
-                });
-        });
-    }
 };
