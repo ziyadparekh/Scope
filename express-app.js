@@ -14,6 +14,10 @@ var findAppByRepoId = middle.findAppByRepoId;
 var validateAppRequest = middle.validateAppRequest;
 var doesAppExist = middle.doesAppExist;
 var doesStartExist = middle.doesStartExist;
+var ensureAppExists = middle.ensureAppExists;
+
+var validateUserRequest = middle.validateUserRequest;
+var doesUserExist = middle.doesUserExist;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -33,7 +37,7 @@ app.get('/status', function (req, res, next) {
 	}, 200);
 });
 
-var user = require('./user');
+var user = require('./UserController');
 
 /*
  * New user account registration
@@ -42,14 +46,16 @@ var user = require('./user');
  * @raw:  curl -X POST -d "user=ziyadparekh&password=123456&email=ziyad.parekh@gmail.com&rsakey=abcd" http://localhost:3010/user
  *        curl -X POST -d "user=me&password=123" http://localhost:4001/user
  */
-app.post('/user', user.post);
+app.post('/user', validateUserRequest, doesUserExist, user.post);
+
+app.get('/user/apps', auth, user.listApps);
 
 /*
  * Edit your user account
  * @Public: false, only with authentication
  * @raw: curl -X PUT -u "ziyadparekh:123456" -d "password=test&rsakey=1234567" http://localhost:3010/user
  */
-app.put('/user', auth, user.put);
+app.put('/user', auth, user.update);
 
 /*
  * Delete your user account
@@ -58,11 +64,14 @@ app.put('/user', auth, user.put);
 */
 app.delete('/user', auth, user.delete);
 
-var _app_ = require('./appController');
+var _app_ = require('./AppController');
 
 app.get('/apps/reboot', findAppByRepoId, _app_.reboot);
 app.post('/apps/stop', auth, authApp, _app_.stop);
 app.post('/apps/start', auth, authApp, _app_.start);
+
+app.post('/apps/star', auth, ensureAppExists, _app_.star);
+app.post('/apps/unstar', auth, ensureAppExists, _app_.unstar);
 
 
 app.post('/apps/:appname', auth, validateAppRequest, doesAppExist, _app_.post);
@@ -72,12 +81,19 @@ app.put('/apps', auth, authApp, doesStartExist, _app_.update);
 
 app.get('/apps/logs', auth, authApp, _app_.logs);
 
+
 // app.put('/apps/:appname', auth, authApp, _app_.put);
 // app.put('/apps', auth, authApp, _app_.put);
 
 app.delete('/apps/:appname', auth, authApp, _app_.delete);
 app.delete('/apps', auth, authApp, _app_.delete);
 
+
+var feed = require('./FeedController');
+
+app.get('/list/latest', feed.latestApps);
+app.get('/list/updated', feed.latestUpdatedApps);
+app.get('/list/trending', feed.trendingApps);
 
 app.listen(3010);
 

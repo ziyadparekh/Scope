@@ -57,6 +57,60 @@ var doesAppExist = function (req, res, next) {
 	}).fail(function (err) { resHelper.send500(res, err.message )});
 };
 
+var ensureAppExists = function (req, res, next) {
+	var appname = req.body.appname;
+	
+	if (!appname) {
+		return resHelper.send401(res, 'You must specify an appname');
+	};
+
+	helpers.getDb().then(function (db) {
+		database.findNodeAppByName(appname, 'apps', db).then(function (result) {
+			req.app = result;
+			req.appname = appname;
+			db.close();
+			next();
+		}).fail(function (err) { resHelper.send500(res, "No App found"); })
+	}).fail(function (err) { resHelper.send500(res, err.message); })
+};
+
+var doesUserExist = function (req, res, next) {
+	var username = req.username;
+	helpers.getDb().then(function (db) {
+		database.findSingleObjectInCollection(username, 'users', db).then(function () {
+			db.close();
+			resHelper.send500(res, 'That username is taken');
+		}).fail(function (err) { next(); });
+	}).fail(function (err) { resHelper.send500(res, err.message ); });
+};
+
+var validateUserRequest = function (req, res, next) {
+	if (!req.body.username || !req.body.password || !req.body.rsaKey) {
+		return resHelper.send401(res, 'Missing Params');
+	};
+
+	var username = req.body.username;
+	var email = req.body.email;
+	var password = req.body.password;
+	var rsaKey = req.body.rsaKey;
+
+	if (!helpers.isValidKey(rsaKey)) {
+		return resHelper.send401(res, 'Invalid RSA Key');
+	}
+	if (!helpers.isValidUsername(username)) {
+		return resHelper.send401(res, 'Invalid Username. Must be Alphanumeric');
+	};
+	if (!helpers.isValidPassword(password)) {
+		return resHelper.send401(res, 'Invalid Password. Must be at least 1 character');
+	};
+
+	req.username = username;
+	req.password = password;
+	req.email = email;
+	req.rsaKey = rsaKey;
+	next();
+};
+
 
 var authenticate = function (req, res, next) {
 	var basicauth = req.headers.authorization;
@@ -79,7 +133,7 @@ var authenticate = function (req, res, next) {
 			}
 			database.findSingleObjectInCollection(username, 'users', db)
 				.then(function (user) {
-					if (user.password === helpers.md5(password) && user.username === username) {
+					if (user.userpassword === helpers.md5(password) && user.username === username) {
 						req.user = user;
 						next();
 					} else {
@@ -161,9 +215,12 @@ var authenticateApp = function (req, res, next) {
 };
 
 
-module.exports.authenticate       = authenticate;
-module.exports.authenticateApp	  = authenticateApp;
-module.exports.findAppByRepoId	  = findAppByRepoId;
-module.exports.validateAppRequest = validateAppRequest;
-module.exports.doesAppExist	  	  = doesAppExist;
-module.exports.doesStartExist	  = doesStartExist;
+module.exports.authenticate       	= authenticate;
+module.exports.authenticateApp	  	= authenticateApp;
+module.exports.findAppByRepoId	  	= findAppByRepoId;
+module.exports.validateAppRequest 	= validateAppRequest;
+module.exports.doesAppExist	  	  	= doesAppExist;
+module.exports.doesStartExist	  	= doesStartExist;
+module.exports.validateUserRequest	= validateUserRequest;
+module.exports.doesUserExist	  	= doesUserExist;
+module.exports.ensureAppExists	  	= ensureAppExists;

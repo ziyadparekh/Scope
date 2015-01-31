@@ -9,4 +9,5 @@ module.exports = {
 	logs : 'docker logs <%= obj.appname %>',
 	gitsetup: config.app_dir + '/scripts/gitreposetup.sh ',
 	removeapp: config.app_dir + '/scripts/removeapp.js ',
+	removeuser: config.app_dir + '/scripts/removeuser.js ',
 };

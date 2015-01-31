@@ -89,11 +89,14 @@ AppController.post = function (req, res, next) {
     helpers.getDb().then(function (db) {
         database.getNextAvailablePort('apps', db).then(function (lastSavedApp) {
             helpers.formatApp(appname, start, user, lastSavedApp.port).then(function (appObject) {
-                database.saveAppToNextPort(appObject, 'apps', db).then(function () {
-                    shellHelpers.setupGitRepo(appObject, user).then(function () {
-                        db.close();
-                        resHelper.sendSuccess(res, "App successfully created", appObject);
-                    }).fail(function (err) { resHelper.send500(res, err ); })
+                database.saveAppToNextPort(appObject, 'apps', db).then(function (result) {
+                    console.log(result);
+                    database.saveAppIdToUserPortfolio(result[0], user, 'users', db).then(function () {
+                        shellHelpers.setupGitRepo(appObject, user).then(function () {
+                            db.close();
+                            resHelper.sendSuccess(res, "App successfully created", appObject);
+                        }).fail(function (err) { resHelper.send500(res, err ); })
+                    }).fail(function (err) { resHelper.send500(res, err.message ); })
                 }).fail(function (err) { resHelper.send500(res, err.message); })
             }).fail(function (err) { resHelper.send500(res, err); })
         }).fail(function (err) { resHelper.send500(res, err.message); })
@@ -103,12 +106,13 @@ AppController.post = function (req, res, next) {
 AppController.delete = function (req, res, next) {
     var user = req.user;
     var appname = req.appname.toLowerCase();
-    
+
     helpers.getDb().then(function (db) {
         database.findNodeAppByName(appname, 'apps', db).then(function (app) {
             database.removeNodeAppByName(appname, 'apps', db).then(function () {
                 shellHelpers.stopApp(app).then(function () {
                     shellHelpers.removeAppDir(app, user).then(function () {
+                        //Need to add method to remove the app container and app image
                         db.close();
                         resHelper.sendSuccess(res, "App successfully deleted");
                     }).fail(function (err) { resHelper.send500(res, err); })
@@ -116,4 +120,42 @@ AppController.delete = function (req, res, next) {
             }).fail(function (err) { resHelper.send500(res, err.message); })
         }).fail(function (err) { resHelper.send500(res, err.message); })
     }).fail(function (err) { resHelper.send500(res, err.message); });
+};
+
+AppController.star = function (req, res, next) {
+    var user = req.user;
+    var appname = req.appname;
+    var app = req.app;
+
+    if (app.appstars.indexOf(user.username) > -1) {
+        return resHelper.send401(res, 'You have already starred this app');
+    };
+
+    helpers.getDb().then(function (db) {
+        database.addUserToAppStars(appname, user, 'apps', db).then(function (app_res) {
+            database.addAppToUserStars(user, appname, 'users', db).then(function (user_res) {
+                db.close();
+                resHelper.sendSuccess(res, 'success', app_res.length);
+            }).fail(function (err) { resHelper.send500(res, err); })
+        }).fail(function (err) { resHelper.send500(res, err); })
+    }).fail(function (err) { resHelper.send500(res, err); });
+};
+
+AppController.unstar = function (req, res, next) {
+    var user = req.user;
+    var appname = req.appname;
+    var app = req.app;
+
+    if (app.appstars.indexOf(user.username) === -1) {
+        return resHelper.send401(res, 'You never starred this app');
+    };
+
+    helpers.getDb().then(function (db) {
+        database.removeUserFromAppStars(appname, user, 'apps', db).then(function (app_res) {
+            database.removeAppFromUserStars(user, appname, 'users', db).then(function (user_res) {
+                db.close();
+                resHelper.sendSuccess(res, 'success', app_res.length);
+            }).fail(function (err) { resHelper.send500(res, err); })
+        }).fail(function (err) { resHelper.send500(res, err); })
+    }).fail(function (err) { resHelper.send500(res, err); });
 };

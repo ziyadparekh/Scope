@@ -30,6 +30,9 @@ Subdomains can be tested by editing /etc/hosts like this:
 ### Delete node app
 - curl -X DELETE -u "testuser:123" -d "appname=test" http://api.localhost:4000/apps
 
+# BUGS
+- Remove app image and container on delete app and delete user
+
 # TODO
 - Secure Mongodb
 - Add git-enforce-directory script
@@ -47,3 +50,11 @@ FUTURE
 - Create User feed
 - Command line interface
 - Front End interface
+
+
+curl -X POST -d "username=ziyadparekh&password=123456&email=ziyad.parekh@gmail.com&rsaKey=ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDU7IVUg0nQar+AbF95qY98oLqbxpu6FpHzXMqWhgSEGx893vApzFZjyVHe8t9FuL64/RGifQplPtZl4ciSvlWV8b9NkUGNXw2NBRckVtUG3LqBZKpRKGMRbp2WjiY+gb5Px1NTPPzwy9Tjz9X6CiBcbaetPeuZIdiImh0bjedKOKrlOs815AExn0HyrFwNJKPhhkb5xhd9c5Jyslrf2DjFkomemZMb6q9Wnve/Bk8RWP9XvCybdIMq1AAmo3J4qghoZdSpkxUSmgwahJ5nPKdDfj1+//t3lk+ZOHhoghlAI3fJUNLtFvuz8p65QB0l5BIpB8R6m3eAP6kB+TppR4gb ziyad.parekh@gmail.com" http://localhost:3010/user
+
+
+curl -X POST -u "ziyadparekh:123456" -d "appname=express&start=index.js" http://localhost:3010/apps
+
+curl -X DELETE -u "ziyadparekh:123456" http://localhost:3010/user
