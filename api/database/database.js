@@ -1,7 +1,7 @@
 'use strict';
 
 var util = require('util');
-var mkDeferred = require('./deferred');
+var mkDeferred = require('../helpers/deferred');
 
 exports.addObjectToCollection = function (object, collectionString, db) {
   var collection = db.collection(collectionString);
@@ -47,7 +47,7 @@ exports.saveAppIdToUserPortfolio = function (app, user, collectionString, db) {
   var deferred = mkDeferred();
   collection.update({_id : user._id},
     { $push: { userapps : app._id }}, function (err, result) {
-      if (err) { 
+      if (err) {
         deferred.reject(err);
       } else {
         deferred.resolve(result);
@@ -143,7 +143,7 @@ exports.getNextAvailablePort = function (collectionString, db) {
   collection.find().sort({ $natural : -1 }).limit(1).toArray(function (err, result) {
     if (err) {
       deferred.reject(err);
-    } 
+    }
     if (!result.length) {
       deferred.resolve({port : 1025});
     } else {
@@ -286,7 +286,7 @@ exports.addUserToAppStars = function (appname, user, collectionString, db) {
 exports.addAppToUserStars = function (user, appname, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({ _id : user._id}, 
+  collection.update({ _id : user._id},
     { $push : { userstarred : appname }}, function (err, result) {
       if (err) {
         deferred.reject(err);
@@ -300,7 +300,7 @@ exports.addAppToUserStars = function (user, appname, collectionString, db) {
 exports.removeUserFromAppStars = function (appname, user, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({ appname : appname}, 
+  collection.update({ appname : appname},
     { $pullAll : { appstars : [user.username] }}, function (err, result) {
       if (err) {
         deferred.reject(err);
@@ -315,7 +315,7 @@ exports.removeUserFromAppStars = function (appname, user, collectionString, db) 
 exports.removeAppFromUserStars = function (user, appname, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({ _id : user._id}, 
+  collection.update({ _id : user._id},
     { $pullAll : { userstarred : [appname] }}, function (err, result) {
       if (err) {
         deferred.reject(err);

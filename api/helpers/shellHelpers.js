@@ -1,13 +1,13 @@
 'use strict';
 
-var deferred = require("./deferred");
-var _ = require('underscore');
-var exec = require('child_process').exec;
-var execFile = require('child_process').execFile;
+var deferred      = require("../helpers/deferred");
+var _             = require('underscore');
+var exec          = require('child_process').exec;
+var execFile      = require('child_process').execFile;
 var shellCommands = require('./shellCommands');
-var config = require('./config');
-var path = require('path');
-var util = require('util');
+var config        = require('../config');
+var path          = require('path');
+var util          = require('util');
 
 var ShellHelper = {};
 

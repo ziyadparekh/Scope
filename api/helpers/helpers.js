@@ -1,17 +1,17 @@
 'use strict';
 
-var _ = require('underscore');
-var crypto = require('crypto');
-var fs = require('fs');
-var path = require('path');
-var docker = require('./generateDockerfile');
-var mkDeffered = require('./deferred');
-var database = require('./database');
-var AppModel = require('./models').defaultAppModel;
-var UserModel = require('./models').defaultUserModel;
+var _           = require('underscore');
+var crypto      = require('crypto');
+var fs          = require('fs');
+var path        = require('path');
+var docker      = require('./generateDockerfile');
+var mkDeffered  = require('../helpers/deferred');
+var database    = require('../database/database');
+var AppModel    = require('../models/models').defaultAppModel;
+var UserModel   = require('../models/models').defaultUserModel;
 var MongoClient = require('mongodb').MongoClient;
-var config = require('./config');
-var url = config.db_url;
+var config      = require('../config');
+var url         = config.db_url;
 
 exports.md5 = function (string) {
 	return crypto.createHash('md5').update(string).digest('hex');

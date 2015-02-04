@@ -1,6 +1,6 @@
 'use strict';
 
-var config = require('./config');
+var config = require('../config');
 
 module.exports = {
 	stop : 'docker stop <%= obj.appname %>',

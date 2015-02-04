@@ -1,12 +1,17 @@
 'use strict';
 
-var database = require("./database");
+var database    = require("../database/database");
 var MongoClient = require('mongodb').MongoClient;
-var util = require('util');
-var helpers = require('./helpers');
-var config = require('./config');
-var resHelper = require('./resHelper');
-var url = config.db_url;
+var util        = require('util');
+var helpers     = require('../helpers/helpers');
+var config      = require('../config');
+var resHelper   = require('../helpers/resHelper');
+var url         = config.db_url;
+
+
+var denied = function (req, res, next) {
+  return resHelper.send401(res, "You are not logged in");
+};
 
 var doesStartExist = function (req, res, next) {
 	if (!req.body.start) {
@@ -42,6 +47,9 @@ var validateAppRequest = function (req, res, next) {
 	if (!/^[A-Z0-9_\-\.]*$/gi.test(appname))
 		return resHelper.send400(res, 'Invalid appname, must be alphanumeric');
 
+  if (config.app_names.indexOf(appname) > -1)
+    return resHelper.send400(res, 'This appname is reserved for internal purposes');
+
 	req.appname = appname;
 	req.start = start;
 	next();
@@ -59,7 +67,7 @@ var doesAppExist = function (req, res, next) {
 
 var ensureAppExists = function (req, res, next) {
 	var appname = req.body.appname;
-	
+
 	if (!appname) {
 		return resHelper.send401(res, 'You must specify an appname');
 	};
@@ -224,3 +232,4 @@ module.exports.doesStartExist	  	= doesStartExist;
 module.exports.validateUserRequest	= validateUserRequest;
 module.exports.doesUserExist	  	= doesUserExist;
 module.exports.ensureAppExists	  	= ensureAppExists;
+module.exports.denied               = denied;

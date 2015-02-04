@@ -7,5 +7,7 @@ module.exports = {
 	apps_home_dir: '/Users/ziyadparekh/Scope/app',
 	userid: 'ziyadparekh',
 	gituser: 'ziyadparekh',
-	git_dom: 'localhost'
+	git_dom: 'localhost',
+  app_names: ['web', 'www', 'admin', 'api'],
+  access_token: 'superSecretAccessToken'
 };

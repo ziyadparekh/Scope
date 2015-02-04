@@ -1,18 +1,18 @@
 'use strict';
 
-var MongoClient = require('mongodb').MongoClient;
-var ObjectID = require('mongodb').ObjectID;
-var database = require('./database');
-var config = require('./config');
-var util = require('util');
-var path = require('path');
-var helpers = require('./helpers');
-var DockerFile = require('./generateDockerfile');
-var exec = require('child_process').exec;
-var execFile = require('child_process').execFile;
-var url = config.db_url;
-var resHelper = require('./resHelper');
-var shellHelpers = require('./shellHelpers');
+var MongoClient   = require('mongodb').MongoClient;
+var ObjectID      = require('mongodb').ObjectID;
+var database      = require('../database/database');
+var config        = require('../config');
+var util          = require('util');
+var path          = require('path');
+var helpers       = require('../helpers/helpers');
+var DockerFile    = require('../helpers/generateDockerfile');
+var exec          = require('child_process').exec;
+var execFile      = require('child_process').execFile;
+var url           = config.db_url;
+var resHelper     = require('../helpers/resHelper');
+var shellHelpers  = require('../helpers/shellHelpers');
 var AppController = module.exports;
 
 

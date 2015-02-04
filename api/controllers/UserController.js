@@ -1,16 +1,16 @@
 'use strict';
 
-var MongoClient = require('mongodb').MongoClient;
-var database = require('./database');
-var config = require('./config');
-var util = require('util');
-var helpers = require('./helpers');
-var _ = require('underscore');
-var exec = require('child_process').exec
-var url = config.db_url;
-var resHelper = require('./resHelper');
-var shellHelpers = require('./shellHelpers');
-var deferred = require("./deferred");
+var MongoClient   = require('mongodb').MongoClient;
+var database      = require('../database/database');
+var config        = require('../config');
+var util          = require('util');
+var helpers       = require('../helpers/helpers');
+var _             = require('underscore');
+var exec          = require('child_process').exec
+var url           = config.db_url;
+var resHelper     = require('../helpers/resHelper');
+var shellHelpers  = require('../helpers/shellHelpers');
+var deferred      = require("../helpers/deferred");
 
 var User = {};
 var UserController = module.exports;
@@ -75,8 +75,8 @@ UserController._updatePassword = function (user, newpass, res) {
             }).fail(function (err) { resHelper.send500(res, err.message); })
         }).fail(function (err) { resHelper.send500(res, err.message); });
     } else {
-       resHelper.send500(res, 'Invalid Password'); 
-    }        
+       resHelper.send500(res, 'Invalid Password');
+    }
 };
 
 UserController._updateRsaKey = function (user, rsakey, res) {

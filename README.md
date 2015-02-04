@@ -58,3 +58,13 @@ curl -X POST -d "username=ziyadparekh&password=123456&email=ziyad.parekh@gmail.c
 curl -X POST -u "ziyadparekh:123456" -d "appname=express&start=index.js" http://localhost:3010/apps
 
 curl -X DELETE -u "ziyadparekh:123456" http://localhost:3010/user
+
+
+
+Create db table for client
+  secretKey
+  publicKey
+
+client hashes data with secret key and sends data, hash and public key over the wire
+server finds the client based on public key, gets secret key and makes hash of req.body with secret key, compares the two
+then resumes the process

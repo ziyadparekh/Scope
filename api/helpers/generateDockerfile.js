@@ -1,10 +1,10 @@
 'use strict';
 
 var _ = require('underscore');
-var config = require("./config");
+var config = require("../config");
 var fs = require('fs');
 var path = require('path');
-var mkDeffered = require('./deferred');
+var mkDeffered = require('../helpers/deferred');
 
 exports.readDockerFile = function () {
 	var def = mkDeffered();
