@@ -8,7 +8,8 @@ var mkDeffered = require('../helpers/deferred');
 
 exports.readDockerFile = function () {
 	var def = mkDeffered();
-	fs.readFile('dockerfileTemplate.html',{encoding : 'ascii'}, function (err, data) {
+	var path = config.app_dir + '/templates/';
+	fs.readFile(path + 'dockerfileTemplate.html',{encoding : 'ascii'}, function (err, data) {
 		if (err) { def.reject(err) }
 		else { def.resolve(data); }
 	});

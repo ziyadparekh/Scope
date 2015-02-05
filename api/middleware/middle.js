@@ -50,7 +50,7 @@ var validateAppRequest = function (req, res, next) {
   if (config.app_names.indexOf(appname) > -1)
     return resHelper.send400(res, 'This appname is reserved for internal purposes');
 
-	req.appname = appname;
+	req.app_name = appname;
 	req.start = start;
 	next();
 };

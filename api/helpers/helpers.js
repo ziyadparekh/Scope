@@ -86,14 +86,12 @@ exports.formatApp = function (appname, start, user, port) {
 	return def.getPromise();
 };
 
-exports.formatUser = function (username, email, password) {
+exports.formatUser = function (user) {
 	var def = mkDeffered();
-	var user = _.extend(UserModel, {
-		username 	: username,
-		useremail 	: email,
-		userpassword: password
-	});
+	var user = _.extend(UserModel, user);
 
+	console.log(user);
+	
 	def.resolve(user);
 	return def.getPromise();
 };

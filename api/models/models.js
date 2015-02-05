@@ -1,23 +1,22 @@
 'use strict';
 
 exports.defaultAppModel = {
-	appname 		: "",
-	appstart 		: "",
-	appport			: "",
-	apprepo			: "",
-	appuser			: "",
-	appcontainer	: "",
-	appimage		: "",
-	appcreated		: "",
-	appupdated		: "",
-	appstars		: [],
-	apprunning		: false
+	app_name 		: "",
+	app_start 		: "",
+	app_port		: "",
+	app_repo		: "",
+	app_user		: "",
+	app_container	: "",
+	app_image		: "",
+	app_created		: "",
+	app_updated		: "",
+	app_stars		: [],
+	app_running		: false
 };
 
 exports.defaultUserModel = {
-	username: "",
-	userpassword: "",
-	useremail: "",
-	userapps: [],
-	userstarred: []
+	user_name: "",
+	user_email: "",
+	user_apps: [],
+	user_starred: []
 };

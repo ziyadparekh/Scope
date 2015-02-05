@@ -21,7 +21,7 @@ AppController.logs = function (req, res, next) {
     var user = req.user;
 
     shellHelpers.dockerLogs(app).then(function (logs) {
-        resHelper.sendSuccess(res, "App logs for " + app.appname, logs);
+        resHelper.sendSuccess(res, "App logs for " + app.app_name, logs);
     }).fail(function (err) { resHelper.send500(res, err.message); });
 };
 
@@ -29,7 +29,7 @@ AppController.update = function (req, res, next) {
     var app = req.app;
     var start = req.start;
     helpers.getDb().then(function (db) {
-        database.updateApp(app, { appstart : start}, 'apps', db).then(function (result) {
+        database.updateApp(app, { app_start : start}, 'apps', db).then(function (result) {
             db.close();
             resHelper.sendSuccess(res, "App start file successfully updated");
         }).fail(function (err) { resHelper.send500(res, err.message); })
@@ -39,7 +39,7 @@ AppController.update = function (req, res, next) {
 AppController.start = function (req, res, next) {
     var app = req.app;
     helpers.getDb().then(function (db) {
-        database.updateApp(app, {apprunning : true }, 'apps', db).then(function (result) {
+        database.updateApp(app, {app_running : true }, 'apps', db).then(function (result) {
             shellHelpers.startApp(app).then(function () {
                 db.close();
                 resHelper.sendSuccess(res, "App successfully restarted");
@@ -51,7 +51,7 @@ AppController.start = function (req, res, next) {
 AppController.stop = function (req, res, next) {
     var app = req.app;
     helpers.getDb().then(function (db) {
-        database.updateApp(app, {apprunning : false}, 'apps', db).then(function (result) {
+        database.updateApp(app, {app_running : false}, 'apps', db).then(function (result) {
             shellHelpers.stopApp(app).then(function () {
                 db.close();
                 resHelper.sendSuccess(res, 'App successfully stopped');
@@ -63,13 +63,13 @@ AppController.stop = function (req, res, next) {
 AppController.reboot = function (req, res, next) {
   var app = req.app;
   helpers.getDb().then(function (db) {
-    database.updateApp(app, { apprunning : true }, 'apps', db).then(function (result) {
+    database.updateApp(app, { app_running : true }, 'apps', db).then(function (result) {
       helpers.writeDockerFile(app).then(function () {
         shellHelpers.buildDocker(app).then(function (logs) {
             database.updateApp(app, {
-                appcontainer: app.appname,
-                appimage: app.appuser + "/" + app.appname,
-                appupdated: new Date()
+                app_container: app.app_name,
+                app_image: app.app_user + "/" + app.app_name,
+                app_updated: new Date()
             }, 'apps', db).then(function () {
                 db.close();
                 util.puts(logs);
@@ -83,7 +83,7 @@ AppController.reboot = function (req, res, next) {
 
 AppController.post = function (req, res, next) {
     var user = req.user;
-    var appname = req.appname.toLowerCase();
+    var appname = req.app_name.toLowerCase();
     var start = req.start;
 
     helpers.getDb().then(function (db) {
@@ -127,7 +127,7 @@ AppController.star = function (req, res, next) {
     var appname = req.appname;
     var app = req.app;
 
-    if (app.appstars.indexOf(user.username) > -1) {
+    if (app.app_stars.indexOf(user.username) > -1) {
         return resHelper.send401(res, 'You have already starred this app');
     };
 
@@ -146,7 +146,7 @@ AppController.unstar = function (req, res, next) {
     var appname = req.appname;
     var app = req.app;
 
-    if (app.appstars.indexOf(user.username) === -1) {
+    if (app.app_stars.indexOf(user.username) === -1) {
         return resHelper.send401(res, 'You never starred this app');
     };
 

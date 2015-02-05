@@ -3,12 +3,17 @@
 // ADD PROCESS.ENV VARIABLES HERE
 // eg process.env.PORT, process.env.LOCAL
 
+process.env.WEB = process.env.WEB || 'http://localhost:3010';
+process.env.LOCAL = process.env.WEB;
+
 var cluster;
 var app;
 var worker;
+var util;
 
 cluster = require('cluster');
 app = require('./express-app');
+util = require('util');
 
 var workers = {};
 var count = require('os').cpus().length;

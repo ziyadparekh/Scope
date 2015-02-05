@@ -31,19 +31,20 @@ UserController.listApps = function (req, res, next) {
 UserController.post = function (req, res, next) {
     console.log('NEW USER');
 
-    var username = req.username;
-    var email = req.email;
-    var password = helpers.md5(req.password);
-    var rsakey = req.rsaKey;
+    var user = req.user;
 
-    helpers.formatUser(username, email, password).then(function (userObject) {
+    if (user._id) return res.redirect('/');
+
+    helpers.formatUser(user).then(function (userObject) {
         var userDirPromise = shellHelpers.createUserDir(userObject);
-        var rsakeyPromise = shellHelpers.updateAuthKeys(userObject, rsakey);
-        deferred.all(userDirPromise, rsakeyPromise).then(function () {
+        //var rsakeyPromise = shellHelpers.updateAuthKeys(userObject, rsakey);
+        deferred.all(userDirPromise).then(function () {
             helpers.getDb().then(function (db) {
                 database.addObjectToCollection(userObject, 'users', db).then(function (result) {
                     db.close();
-                    resHelper.sendSuccess(res, 'User account successfully created', _.omit(userObject, 'userpassword'));
+                    console.log('here');
+                    res.redirect('/');
+                    // resHelper.sendSuccess(res, 'User account successfully created', _.omit(userObject, 'userpassword'));
                 }).fail(function (err) { resHelper.send500(res, err.message); })
             }).fail(function (err) { resHelper.send500(res, err.message); })
         }).fail(function (err) { resHelper.send500(res, err.message); })
@@ -52,15 +53,14 @@ UserController.post = function (req, res, next) {
 
 UserController.update = function (req, res, next) {
     var user = req.user;
-    var newpass = req.body.password;
+    //var newpass = req.body.password;
     var rsakey = req.body.rsakey;
 
-    if (!newpass && !rsakey) {
-        resHelper.send500(res, 'Need either a new password or rsa key');
+    if (!rsakey) {
+        resHelper.send500(res, 'Need an rsa key');
     };
 
-    if (newpass) UserController._updatePassword(user, newpass, res);
-    else if (rsakey) UserController._updateRsaKey(user, rsakey, res);
+    if (rsakey) UserController._updateRsaKey(user, rsakey, res);
 };
 
 UserController._updatePassword = function (user, newpass, res) {

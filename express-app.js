@@ -7,12 +7,14 @@ var session         = require('express-session');
 var passport        = require('passport');
 var toobusy         = require('toobusy');
 var morgan          = require('morgan');
+var path            = require('path');
 
-var express 		  = require('express');
+var express 		= require('express');
 var bodyParser 		= require('body-parser');
 var errorHandler 	= require('errorhandler');
-var util 			    = require('util');
-var middle 			  = require('./api/middleware/middle');
+var util 			= require('util');
+var middle 			= require('./api/middleware/middle');
+var index           = require('./routes/index');
 
 var app = module.exports = express();
 
@@ -44,6 +46,11 @@ process.on('uncaughtException', function(err){
     process.exit(0);
 });
 
+app.set('view engine', 'ejs');
+
+app.set('views', __dirname + '/views');
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use(errorHandler({ showStack: true }));
 
 app.use(cookieParser());
@@ -71,15 +78,19 @@ app.get('/status', function (req, res, next) {
 	}, 200);
 });
 
+var user = require('./api/controllers/UserController');
+
+app.get('/login', index.login);
+
 // Github authentication
-// require('./auth');
+require('./api/modules/auth');
+
 app.get('/auth/github', passport.authenticate('github'));
-app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: middle.denied }, auth.callback));
+app.get('/auth/github/callback', passport.authenticate('github', { failureRedirect: middle.denied }), user.post);
 // Need to implement middle.denied (routes ?)
 // Need to implement
 
 
-var user = require('./api/controllers/UserController');
 
 /*
  * New user account registration
@@ -88,7 +99,7 @@ var user = require('./api/controllers/UserController');
  * @raw:  curl -X POST -d "user=ziyadparekh&password=123456&email=ziyad.parekh@gmail.com&rsakey=abcd" http://localhost:3010/user
  *        curl -X POST -d "user=me&password=123" http://localhost:4001/user
  */
-app.post('/user', validateUserRequest, doesUserExist, user.post);
+//app.post('/user', validateUserRequest, doesUserExist, user.post);
 
 app.get('/user/apps', auth, user.listApps);
 
@@ -97,31 +108,31 @@ app.get('/user/apps', auth, user.listApps);
  * @Public: false, only with authentication
  * @raw: curl -X PUT -u "ziyadparekh:123456" -d "password=test&rsakey=1234567" http://localhost:3010/user
  */
-app.put('/user', auth, user.update);
+app.put('/user', ensureLoggedIn('/login'), user.update);
 
 /*
  * Delete your user account
  * @Public: false, only with authentication
  * @raw: curl -X DELETE -u "ziyadparekh:123456" http://localhost:3010/user
 */
-app.delete('/user', auth, user.delete);
+app.delete('/user', ensureLoggedIn('/login'), user.delete);
 
 var _app_ = require('./api/controllers/AppController');
 
 app.get('/apps/reboot', findAppByRepoId, _app_.reboot);
-app.post('/apps/stop', auth, authApp, _app_.stop);
-app.post('/apps/start', auth, authApp, _app_.start);
+app.post('/apps/stop', ensureLoggedIn('/login'), authApp, _app_.stop);
+app.post('/apps/start', ensureLoggedIn('/login'), authApp, _app_.start);
 
-app.post('/apps/star', auth, ensureAppExists, _app_.star);
-app.post('/apps/unstar', auth, ensureAppExists, _app_.unstar);
+app.post('/apps/star', ensureLoggedIn('/login'), ensureAppExists, _app_.star);
+app.post('/apps/unstar', ensureLoggedIn('/login'), ensureAppExists, _app_.unstar);
 
 
-app.post('/apps/:appname', auth, validateAppRequest, doesAppExist, _app_.post);
-app.post('/apps', auth, validateAppRequest, doesAppExist, _app_.post);
+app.post('/apps/:appname', ensureLoggedIn('/login'), validateAppRequest, doesAppExist, _app_.post);
+app.post('/apps', validateAppRequest, doesAppExist, _app_.post);
 
-app.put('/apps', auth, authApp, doesStartExist, _app_.update);
+app.put('/apps', ensureLoggedIn('/login'), authApp, doesStartExist, _app_.update);
 
-app.get('/apps/logs', auth, authApp, _app_.logs);
+app.get('/apps/logs', ensureLoggedIn('/login'), authApp, _app_.logs);
 
 
 // app.put('/apps/:appname', auth, authApp, _app_.put);
@@ -136,3 +147,6 @@ var feed = require('./api/controllers/FeedController');
 app.get('/list/latest', feed.latestApps);
 app.get('/list/updated', feed.latestUpdatedApps);
 app.get('/list/trending', feed.trendingApps);
+
+
+app.get('/', ensureLoggedIn('/login'), index.index);
