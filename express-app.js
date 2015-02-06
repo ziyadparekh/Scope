@@ -57,17 +57,12 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
-if (process.env.PORT) {
-    app.use(morgan('combined'));
-} else {
-    app.use(morgan('combined'));
-    app.use(errorHandler({ dumpExceptions: false, showStack: false }));
-    app.use(session({
-        secret: 'tobo2obo',
-        cookie: { maxAge: 60 * 60 * 10008 }
-    }));
-}
+app.use(morgan('combined'));
+app.use(errorHandler({ dumpExceptions: false, showStack: false }));
+app.use(session({
+    secret: 'tobo2obo',
+    cookie: { maxAge: 60 * 60 * 10008 }
+}));
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -138,8 +133,8 @@ app.get('/apps/logs', ensureLoggedIn('/login'), authApp, _app_.logs);
 // app.put('/apps/:appname', auth, authApp, _app_.put);
 // app.put('/apps', auth, authApp, _app_.put);
 
-app.delete('/apps/:appname', auth, authApp, _app_.delete);
-app.delete('/apps', auth, authApp, _app_.delete);
+app.delete('/apps/:appname', ensureLoggedIn('/login'), authApp, _app_.delete);
+app.delete('/apps', ensureLoggedIn('/login'), authApp, _app_.delete);
 
 
 var feed = require('./api/controllers/FeedController');

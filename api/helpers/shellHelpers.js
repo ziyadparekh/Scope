@@ -99,11 +99,13 @@ ShellHelper.setupGitRepo = function (app, user) {
 	var args = [config.app_dir,
 				config.git_home_dir,
 				user.user_name,
-				app.app__name,
-				app.app__start,
+				app.app_name,
+				app.app_start,
 				config.userid,
 				config.gituser,
 				config.apps_home_dir];
+
+  console.log(args);
 
     var cmd = shellCommands.gitsetup + args.join(" ");
 
@@ -122,7 +124,7 @@ ShellHelper.removeAppDir = function (app, user) {
 	var appUserHome = path.join(config.apps_home_dir, app.app_user, app.app_name);
     var appGitHome = path.join(config.git_home_dir, app.app_user, app.app_name);
     var cmd = shellCommands.removeapp + appUserHome + ' ' + appGitHome;
-    util.format("remove app dir cmd %s", cmd);
+    util.puts("remove app dir cmd ->" + cmd);
     exec(cmd, function (err, stdout, stderr) {
         if (err) { def.reject(err.message); }
         if (stdout.length) { def.resolve(stdout); }

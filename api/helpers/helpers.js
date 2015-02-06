@@ -39,8 +39,7 @@ exports.isValidUsername = function (username) {
 };
 
 exports.isValidPassword = function (password) {
-	 var truth = password && password.length < 1 ? false : true;
-	 return truth;
+	 return password && password.length < 1;
 };
 
 exports.getDb = function () {
@@ -70,16 +69,16 @@ exports.writeDockerFile = function (app) {
 
 exports.formatApp = function (appname, start, user, port) {
 	var def = mkDeffered();
-	var dir = path.join(config.git_home_dir, user.username, appname + '.git');
+	var dir = path.join(config.git_home_dir, user.user_name, appname + '.git');
 	var gitRepo = config.gituser + "@" + config.git_dom + ":" + dir;
 	var app = _.extend(AppModel, {
-		appname  	: appname,
-		appstart 	: start,
-		appuser  	: user.username,
-		appport  	: port + 1,
-		apprepo  	: gitRepo,
-		appupdated	: new Date(),
-		appcreated	: new Date()
+		app_name  	: appname,
+		app_start 	: start,
+		app_user  	: user.username,
+		app_port  	: port + 1,
+		app_repo  	: gitRepo,
+		app_updated	: new Date(),
+		app_created	: new Date()
 	});
 
 	def.resolve(app);
@@ -91,7 +90,7 @@ exports.formatUser = function (user) {
 	var user = _.extend(UserModel, user);
 
 	console.log(user);
-	
+
 	def.resolve(user);
 	return def.getPromise();
 };

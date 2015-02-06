@@ -56,7 +56,8 @@ var validateAppRequest = function (req, res, next) {
 };
 
 var doesAppExist = function (req, res, next) {
-	var appname = req.appname;
+	var appname = req.body.appname;
+  console.log(appname);
 	helpers.getDb().then(function (db) {
 		database.findNodeAppByName(appname, 'apps', db).then(function () {
 			db.close();

@@ -10,6 +10,7 @@
 
  var database = require('../database/database');
  var helpers = require('../helpers/helpers');
+ var config = require('../config');
 
 passport.serializeUser(function(user, done) {
     done(null, user);
@@ -22,8 +23,8 @@ passport.deserializeUser(function(user, done) {
 
 passport.use(
 new GithubStrategy({
-    clientID: 'e89a024d36b0e463711b',
-    clientSecret: '11434c7d3fb34f03048d2cb68d99d8a23724f33e',
+    clientID: config.github_client,
+    clientSecret: config.github_secret,
     callbackURL: process.env.LOCAL+"/auth/github/callback",
     passReqToCallback: true
 },
