@@ -1,19 +1,19 @@
 'use strict';
 
-var deferred = require("./deferred");
-var _ = require('underscore');
-var exec = require('child_process').exec;
-var execFile = require('child_process').execFile;
+var deferred      = require("../helpers/deferred");
+var _             = require('underscore');
+var exec          = require('child_process').exec;
+var execFile      = require('child_process').execFile;
 var shellCommands = require('./shellCommands');
-var config = require('./config');
-var path = require('path');
-var util = require('util');
+var config        = require('../config');
+var path          = require('path');
+var util          = require('util');
 
 var ShellHelper = {};
 
 ShellHelper.createUserDir = function (user) {
 	var def = deferred();
-	var cmd = config.app_dir + '/scripts/createUserDir.js ' + user.username;
+	var cmd = config.app_dir + '/scripts/createUserDir.js ' + user.user_name;
 	exec(cmd, function (err, stdout, stderr) {
 		if (err && err.length) { def.reject(err); }
         if (stdout.length) { def.resolve(stdout); }
@@ -24,7 +24,7 @@ ShellHelper.createUserDir = function (user) {
 
 ShellHelper.updateAuthKeys = function (user, key) {
 	var def = deferred();
-	var username = user.username;
+	var username = user.user_name;
 	var cmd = config.app_dir + '/scripts/updateAuthKeys.js ' + config.git_home_dir + '/' + username + ' "' + key + '"';
 	exec(cmd, function (err, stdout, stderr) {
 		if (err && err.length) { def.reject(err); }
@@ -35,7 +35,7 @@ ShellHelper.updateAuthKeys = function (user, key) {
 
 ShellHelper.stopApp = function (app) {
 	var def = deferred();
-	if (!app.apprunning) {
+	if (!app.app_running) {
 		def.resolve('App is already stopped');
 		return def.getPromise();
 	}
@@ -50,7 +50,7 @@ ShellHelper.stopApp = function (app) {
 
 ShellHelper.startApp = function (app) {
 	var def = deferred();
-	if (app.apprunning) {
+	if (app.app_running) {
 		def.resolve('App is already running');
 		return def.getPromise();
 	}
@@ -64,14 +64,14 @@ ShellHelper.startApp = function (app) {
 
 ShellHelper.returnRenderedCmd = function (string, app) {
 	var cmdFunc = _.template(string);
-	return cmdFunc({appname : app.appname});
+	return cmdFunc({appname : app.app_name});
 };
 
 ShellHelper.buildDocker = function (app) {
 	var def = deferred();
-	var appUserHome = path.join(config.apps_home_dir, app.appuser, app.appname);
-	var args = [appUserHome, app.appuser, app.appname, app.appport];
-	execFile(config.app_dir + '/startdocker.sh', args, function (err, stdout, stderr) {
+	var appUserHome = path.join(config.apps_home_dir, app.app_user, app.app_name);
+	var args = [appUserHome, app.app_user, app.app_name, app.app_port];
+	execFile(config.app_dir + '/scripts/startdocker.sh', args, function (err, stdout, stderr) {
         if (err) { def.reject(err); }
         if (stdout.length) { def.resolve(stdout); }
         if (stderr.length) { def.resolve(stderr); }
@@ -81,7 +81,7 @@ ShellHelper.buildDocker = function (app) {
 
 ShellHelper.dockerLogs = function (app) {
 	var def = deferred();
-	if (!app.apprunning) {
+	if (!app.app_running) {
 		def.resolve('App is not running');
 		return def.getPromise();
 	}
@@ -98,12 +98,14 @@ ShellHelper.setupGitRepo = function (app, user) {
 	var def = deferred();
 	var args = [config.app_dir,
 				config.git_home_dir,
-				user.username,
-				app.appname,
-				app.appstart,
+				user.user_name,
+				app.app_name,
+				app.app_start,
 				config.userid,
 				config.gituser,
 				config.apps_home_dir];
+
+  console.log(args);
 
     var cmd = shellCommands.gitsetup + args.join(" ");
 
@@ -119,10 +121,10 @@ ShellHelper.setupGitRepo = function (app, user) {
 
 ShellHelper.removeAppDir = function (app, user) {
 	var def = deferred();
-	var appUserHome = path.join(config.apps_home_dir, app.appuser, app.appname);
-    var appGitHome = path.join(config.git_home_dir, app.appuser, app.appname);
+	var appUserHome = path.join(config.apps_home_dir, app.app_user, app.app_name);
+    var appGitHome = path.join(config.git_home_dir, app.app_user, app.app_name);
     var cmd = shellCommands.removeapp + appUserHome + ' ' + appGitHome;
-    util.format("remove app dir cmd %s", cmd);
+    util.puts("remove app dir cmd ->" + cmd);
     exec(cmd, function (err, stdout, stderr) {
         if (err) { def.reject(err.message); }
         if (stdout.length) { def.resolve(stdout); }
@@ -134,8 +136,8 @@ ShellHelper.removeAppDir = function (app, user) {
 
 ShellHelper.removeUserDir = function (user) {
 	var def = deferred();
-	var userAppDir = path.join(config.apps_home_dir, user.username);
-	var appGitHome = path.join(config.git_home_dir, user.username);
+	var userAppDir = path.join(config.apps_home_dir, user.user_name);
+	var appGitHome = path.join(config.git_home_dir, user.user_name);
 	var cmd = shellCommands.removeuser + userAppDir + ' ' + appGitHome;
 	util.format("remove user dir cmd %s", cmd);
 	exec(cmd, function (err, stdout, stderr) {

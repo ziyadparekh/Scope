@@ -1,12 +1,19 @@
 'use strict';
 
-var database = require("./database");
+var database    = require("../database/database");
 var MongoClient = require('mongodb').MongoClient;
-var util = require('util');
-var helpers = require('./helpers');
-var config = require('./config');
-var resHelper = require('./resHelper');
-var url = config.db_url;
+var util        = require('util');
+var helpers     = require('../helpers/helpers');
+var config      = require('../config');
+var resHelper   = require('../helpers/resHelper');
+var url         = config.db_url;
+
+
+var denied = function (req, res, next) {
+	res.render({
+		status: 'failure'
+	});
+};
 
 var doesStartExist = function (req, res, next) {
 	if (!req.body.start) {
@@ -42,13 +49,17 @@ var validateAppRequest = function (req, res, next) {
 	if (!/^[A-Z0-9_\-\.]*$/gi.test(appname))
 		return resHelper.send400(res, 'Invalid appname, must be alphanumeric');
 
-	req.appname = appname;
+  if (config.app_names.indexOf(appname) > -1)
+    return resHelper.send400(res, 'This appname is reserved for internal purposes');
+
+	req.app_name = appname;
 	req.start = start;
 	next();
 };
 
 var doesAppExist = function (req, res, next) {
-	var appname = req.appname;
+	var appname = req.body.appname;
+  console.log(appname);
 	helpers.getDb().then(function (db) {
 		database.findNodeAppByName(appname, 'apps', db).then(function () {
 			db.close();
@@ -57,9 +68,21 @@ var doesAppExist = function (req, res, next) {
 	}).fail(function (err) { resHelper.send500(res, err.message )});
 };
 
+var differentUser = function (req, res, next) {
+	var username = req.user.user_name;
+	var targetUser = req.body.username;
+
+	if (username === targetUser) {
+		resHelper.send401(res, "This isn't possible");
+	} else {
+		req.username = req.body.username;
+		next();
+	}
+};
+
 var ensureAppExists = function (req, res, next) {
 	var appname = req.body.appname;
-	
+
 	if (!appname) {
 		return resHelper.send401(res, 'You must specify an appname');
 	};
@@ -73,6 +96,16 @@ var ensureAppExists = function (req, res, next) {
 		}).fail(function (err) { resHelper.send500(res, "No App found"); })
 	}).fail(function (err) { resHelper.send500(res, err.message); })
 };
+
+var isUserRegistered = function (req, res, next) {
+	var username = req.username;
+	helpers.getDb().then(function (db) {
+		database.findSingleObjectInCollection(username, 'users', db).then(function () {
+			db.close();
+			next();
+		}).fail(function (err) { resHelper.send401(res, 'No user was found'); });
+	}).fail(function (err) { resHelper.send500(res, err.message ); });
+}
 
 var doesUserExist = function (req, res, next) {
 	var username = req.username;
@@ -224,3 +257,6 @@ module.exports.doesStartExist	  	= doesStartExist;
 module.exports.validateUserRequest	= validateUserRequest;
 module.exports.doesUserExist	  	= doesUserExist;
 module.exports.ensureAppExists	  	= ensureAppExists;
+module.exports.differentUser		= differentUser;
+module.exports.isUserRegistered		= isUserRegistered;
+module.exports.denied               = denied;

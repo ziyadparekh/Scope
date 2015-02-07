@@ -1,14 +1,15 @@
 'use strict';
 
 var _ = require('underscore');
-var config = require("./config");
+var config = require("../config");
 var fs = require('fs');
 var path = require('path');
-var mkDeffered = require('./deferred');
+var mkDeffered = require('../helpers/deferred');
 
 exports.readDockerFile = function () {
 	var def = mkDeffered();
-	fs.readFile('dockerfileTemplate.html',{encoding : 'ascii'}, function (err, data) {
+	var path = config.app_dir + '/templates/';
+	fs.readFile(path + 'dockerfileTemplate.html',{encoding : 'ascii'}, function (err, data) {
 		if (err) { def.reject(err) }
 		else { def.resolve(data); }
 	});
@@ -25,7 +26,7 @@ exports.renderDockerFile = function (data, app) {
 
 exports.writeDockerFile = function (file, app) {
 	var def = mkDeffered();
-	var fullPath = path.join(config.apps_home_dir, app.appuser, app.appname);
+	var fullPath = path.join(config.apps_home_dir, app.app_user, app.app_name);
 	fs.writeFile(fullPath + '/Dockerfile', file, function (err) {
 		if (err) { def.reject(err) }
 		else { def.resolve() };

@@ -1,16 +1,16 @@
 'use strict';
 
-var MongoClient = require('mongodb').MongoClient;
-var database = require('./database');
-var config = require('./config');
-var util = require('util');
-var helpers = require('./helpers');
-var _ = require('underscore');
-var exec = require('child_process').exec
-var url = config.db_url;
-var resHelper = require('./resHelper');
-var shellHelpers = require('./shellHelpers');
-var deferred = require("./deferred");
+var MongoClient   = require('mongodb').MongoClient;
+var database      = require('../database/database');
+var config        = require('../config');
+var util          = require('util');
+var helpers       = require('../helpers/helpers');
+var _             = require('underscore');
+var exec          = require('child_process').exec
+var url           = config.db_url;
+var resHelper     = require('../helpers/resHelper');
+var shellHelpers  = require('../helpers/shellHelpers');
+var deferred      = require("../helpers/deferred");
 
 var User = {};
 var UserController = module.exports;
@@ -27,23 +27,60 @@ UserController.listApps = function (req, res, next) {
     }).fail(function (err) { resHelper.send500(res, err.message);});
 };
 
+UserController.follow = function (req, res, next) {
+    var user = req.user;
+    var following = req.username;
+
+    helpers.getDb().then(function (db) {
+        database.findSingleObjectInCollection(user.user_name, 'users', db).then(function (userObject) {
+            if (userObject.user_following.indexOf(following) > -1) {
+                return resHelper.send401(res, "You are already following this person");
+            }
+            database.addFollowToUser(following, userObject, 'users', db).then(function (user_res) {
+                database.addUserToFollow(userObject.user_name, following, 'users', db).then(function (follow_res) {
+                    db.close();
+                    resHelper.sendSuccess(res, 'success', user_res.length);
+                }).fail(function (err) { resHelper.send500(res, err.message); })
+            }).fail(function (err) { resHelper.send500(res, err.message); })
+        }).fail(function (err) { resHelper.send500(res, err.message); })
+    }).fail(function (err) { resHelper.send500(res, err.message); });
+};
+
+UserController.unfollow = function (req, res, next) {
+    var user = req.user;
+    var unfollow = req.username;
+
+    helpers.getDb().then(function (db) {
+        database.findSingleObjectInCollection(user.user_name, 'users', db).then(function (userObject) {
+            if (userObject.user_following.indexOf(unfollow) === -1) {
+                return resHelper.send401(res, "You aren't following this person");
+            }
+            database.removeFollowFromUser(userObject, unfollow, 'users', db).then(function (user_res) {
+                database.removeUserFromUnfollow(unfollow, userObject, 'users', db).then(function (unfollow_res) {
+                    db.close();
+                    resHelper.sendSuccess(res, 'success', user_res.length);
+                }).fail(function (err) { resHelper.send500(res, err.message); })
+            }).fail(function (err) { resHelper.send500(res, err.message); })
+        }).fail(function (err) { resHelper.send500(res, err.message); })
+    }).fail(function (err) { resHelper.send500(res, err.message); });
+};
+
 
 UserController.post = function (req, res, next) {
     console.log('NEW USER');
 
-    var username = req.username;
-    var email = req.email;
-    var password = helpers.md5(req.password);
-    var rsakey = req.rsaKey;
+    var user = req.user;
 
-    helpers.formatUser(username, email, password).then(function (userObject) {
+    if (user._id) return res.redirect('/');
+
+    helpers.formatUser(user).then(function (userObject) {
         var userDirPromise = shellHelpers.createUserDir(userObject);
-        var rsakeyPromise = shellHelpers.updateAuthKeys(userObject, rsakey);
-        deferred.all(userDirPromise, rsakeyPromise).then(function () {
+        //var rsakeyPromise = shellHelpers.updateAuthKeys(userObject, rsakey);
+        deferred.all(userDirPromise).then(function () {
             helpers.getDb().then(function (db) {
                 database.addObjectToCollection(userObject, 'users', db).then(function (result) {
                     db.close();
-                    resHelper.sendSuccess(res, 'User account successfully created', _.omit(userObject, 'userpassword'));
+                    res.redirect('/');
                 }).fail(function (err) { resHelper.send500(res, err.message); })
             }).fail(function (err) { resHelper.send500(res, err.message); })
         }).fail(function (err) { resHelper.send500(res, err.message); })
@@ -52,15 +89,14 @@ UserController.post = function (req, res, next) {
 
 UserController.update = function (req, res, next) {
     var user = req.user;
-    var newpass = req.body.password;
+    //var newpass = req.body.password;
     var rsakey = req.body.rsakey;
 
-    if (!newpass && !rsakey) {
-        resHelper.send500(res, 'Need either a new password or rsa key');
+    if (!rsakey) {
+        resHelper.send500(res, 'Need an rsa key');
     };
 
-    if (newpass) UserController._updatePassword(user, newpass, res);
-    else if (rsakey) UserController._updateRsaKey(user, rsakey, res);
+    if (rsakey) UserController._updateRsaKey(user, rsakey, res);
 };
 
 UserController._updatePassword = function (user, newpass, res) {
@@ -75,8 +111,8 @@ UserController._updatePassword = function (user, newpass, res) {
             }).fail(function (err) { resHelper.send500(res, err.message); })
         }).fail(function (err) { resHelper.send500(res, err.message); });
     } else {
-       resHelper.send500(res, 'Invalid Password'); 
-    }        
+       resHelper.send500(res, 'Invalid Password');
+    }
 };
 
 UserController._updateRsaKey = function (user, rsakey, res) {
@@ -85,7 +121,8 @@ UserController._updateRsaKey = function (user, rsakey, res) {
 
     if (helpers.isValidKey(rsakey)) {
         var rsakeyPromise = shellHelpers.updateAuthKeys(user, rsakey);
-        deferred.all([rsakeyPromise]).then(function (result) {
+        var userUpdateProcess = UserController._getRsaPromise(user);
+        deferred.all([rsakeyPromise, userUpdateProcess]).then(function (result) {
             console.log('asdasd');
             resHelper.sendSuccess(res, "RSA key successfully updated");
         }).fail(function (err) { resHelper.send500(res, err.message); });
@@ -93,6 +130,18 @@ UserController._updateRsaKey = function (user, rsakey, res) {
         resHelper.send500(res, 'Invalid Key');
     }
 };
+
+UserController._getRsaPromise = function (user) {
+    var def = deferred();
+    helpers.getDb().then(function (db) {
+        database.updateObjectInCollection(user, { user_rsakey : true }, 'users', db).then(function (result) {
+            db.close();
+            def.resolve(result);
+        }).fail(function (err) { resHelper.send500(res, err.message); })
+    }).fail(function (err) { resHelper.send500(res, err.message); });
+
+    return def.getPromise();
+}
 
 UserController.delete = function (req, res, next) {
     var user = req.user;
