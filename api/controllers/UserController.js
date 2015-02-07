@@ -27,6 +27,44 @@ UserController.listApps = function (req, res, next) {
     }).fail(function (err) { resHelper.send500(res, err.message);});
 };
 
+UserController.follow = function (req, res, next) {
+    var user = req.user;
+    var following = req.username;
+
+    helpers.getDb().then(function (db) {
+        database.findSingleObjectInCollection(user.user_name, 'users', db).then(function (userObject) {
+            if (userObject.user_following.indexOf(following) > -1) {
+                return resHelper.send401(res, "You are already following this person");
+            }
+            database.addFollowToUser(following, userObject, 'users', db).then(function (user_res) {
+                database.addUserToFollow(userObject.user_name, following, 'users', db).then(function (follow_res) {
+                    db.close();
+                    resHelper.sendSuccess(res, 'success', user_res.length);
+                }).fail(function (err) { resHelper.send500(res, err.message); })
+            }).fail(function (err) { resHelper.send500(res, err.message); })
+        }).fail(function (err) { resHelper.send500(res, err.message); })
+    }).fail(function (err) { resHelper.send500(res, err.message); });
+};
+
+UserController.unfollow = function (req, res, next) {
+    var user = req.user;
+    var unfollow = req.username;
+
+    helpers.getDb().then(function (db) {
+        database.findSingleObjectInCollection(user.user_name, 'users', db).then(function (userObject) {
+            if (userObject.user_following.indexOf(unfollow) === -1) {
+                return resHelper.send401(res, "You aren't following this person");
+            }
+            database.removeFollowFromUser(userObject, unfollow, 'users', db).then(function (user_res) {
+                database.removeUserFromUnfollow(unfollow, userObject, 'users', db).then(function (unfollow_res) {
+                    db.close();
+                    resHelper.sendSuccess(res, 'success', user_res.length);
+                }).fail(function (err) { resHelper.send500(res, err.message); })
+            }).fail(function (err) { resHelper.send500(res, err.message); })
+        }).fail(function (err) { resHelper.send500(res, err.message); })
+    }).fail(function (err) { resHelper.send500(res, err.message); });
+};
+
 
 UserController.post = function (req, res, next) {
     console.log('NEW USER');
@@ -42,9 +80,7 @@ UserController.post = function (req, res, next) {
             helpers.getDb().then(function (db) {
                 database.addObjectToCollection(userObject, 'users', db).then(function (result) {
                     db.close();
-                    console.log('here');
                     res.redirect('/');
-                    // resHelper.sendSuccess(res, 'User account successfully created', _.omit(userObject, 'userpassword'));
                 }).fail(function (err) { resHelper.send500(res, err.message); })
             }).fail(function (err) { resHelper.send500(res, err.message); })
         }).fail(function (err) { resHelper.send500(res, err.message); })
@@ -85,7 +121,8 @@ UserController._updateRsaKey = function (user, rsakey, res) {
 
     if (helpers.isValidKey(rsakey)) {
         var rsakeyPromise = shellHelpers.updateAuthKeys(user, rsakey);
-        deferred.all([rsakeyPromise]).then(function (result) {
+        var userUpdateProcess = UserController._getRsaPromise(user);
+        deferred.all([rsakeyPromise, userUpdateProcess]).then(function (result) {
             console.log('asdasd');
             resHelper.sendSuccess(res, "RSA key successfully updated");
         }).fail(function (err) { resHelper.send500(res, err.message); });
@@ -93,6 +130,18 @@ UserController._updateRsaKey = function (user, rsakey, res) {
         resHelper.send500(res, 'Invalid Key');
     }
 };
+
+UserController._getRsaPromise = function (user) {
+    var def = deferred();
+    helpers.getDb().then(function (db) {
+        database.updateObjectInCollection(user, { user_rsakey : true }, 'users', db).then(function (result) {
+            db.close();
+            def.resolve(result);
+        }).fail(function (err) { resHelper.send500(res, err.message); })
+    }).fail(function (err) { resHelper.send500(res, err.message); });
+
+    return def.getPromise();
+}
 
 UserController.delete = function (req, res, next) {
     var user = req.user;

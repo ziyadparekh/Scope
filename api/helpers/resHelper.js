@@ -3,11 +3,11 @@
 var ResHelper = {};
 
 ResHelper.sendSuccess = function (res, message, result) {
-	res.json({
+	res.status(200).json({
 		status: 'success',
 		message: message,
 		result: result || {}
-	}, 200);
+	});
 };
 
 ResHelper.send500 = function (res, message) {

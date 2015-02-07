@@ -32,7 +32,7 @@ exports.findSingleObjectInCollection = function (username, collectionString, db)
 exports.getUserPortfolio = function (user, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.find({ app_user : user.use_rname }).toArray(function (err, result) {
+  collection.find({ app_user : user.user_name }).toArray(function (err, result) {
     if (err || !result) {
       deferred.reject(err);
     } else {
@@ -147,7 +147,7 @@ exports.getNextAvailablePort = function (collectionString, db) {
     if (!result.length) {
       deferred.resolve({port : 1025});
     } else {
-      deferred.resolve(result[0]);
+      deferred.resolve({port : result[0].app_port});
     }
   });
   return deferred.getPromise();
@@ -269,10 +269,66 @@ exports.findTrendingApps = function (limit, offset, collectionString, db) {
     return deferred.getPromise();
 };
 
+exports.addFollowToUser = function (following, user, collectionString, db) {
+  var collection = db.collection(collectionString);
+  var deferred = mkDeferred();
+  collection.update({ _id : user._id },
+    { $push : { user_following : following}}, function (err, result) {
+      if (err) {
+        deferred.reject(err);
+      } else {
+        deferred.resolve(result);
+      }
+    });
+  return deferred.getPromise();
+};
+
+exports.addUserToFollow = function (username, following, collectionString, db) {
+  var collection = db.collection(collectionString);
+  var deferred = mkDeferred();
+  collection.update({ user_name : following},
+    { $push : { user_followers : username }}, function (err, result) {
+      if (err) {
+        deferred.reject(err);
+      } else {
+        deferred.resolve(result);
+      }
+    });
+  return deferred.getPromise();
+};
+
+exports.removeFollowFromUser = function (user, unfollow, collectionString, db) {
+  var collection = db.collection(collectionString);
+  var deferred = mkDeferred();
+  collection.update({ _id : user._id },
+    { $pullAll : { user_following : [unfollow]}}, function (err, result) {
+      if (err) {
+        deferred.reject(err);
+      } else {
+        deferred.resolve(result);
+      }
+    });
+  return deferred.getPromise();
+};
+
+exports.removeUserFromUnfollow = function (unfollow, user, collectionString, db) {
+  var collection = db.collection(collectionString);
+  var deferred = mkDeferred();
+  collection.update({ user_name : unfollow }, 
+    { $pullAll : { user_followers : [user.user_name]}}, function (err, result) {
+      if (err) {
+        deferred.reject(err);
+      } else {
+        deferred.resolve(result);
+      }
+    });
+  return deferred.getPromise();
+};
+
 exports.addUserToAppStars = function (appname, user, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({ appname : appname},
+  collection.update({ app_name : appname},
     { $push : { app_stars : user.user_name }}, function (err, result) {
       if (err) {
         deferred.reject(err);
@@ -286,7 +342,7 @@ exports.addUserToAppStars = function (appname, user, collectionString, db) {
 exports.addAppToUserStars = function (user, appname, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({ _id : user._id},
+  collection.update({ user_name : user.user_name},
     { $push : { user_starred : appname }}, function (err, result) {
       if (err) {
         deferred.reject(err);
@@ -315,7 +371,7 @@ exports.removeUserFromAppStars = function (appname, user, collectionString, db) 
 exports.removeAppFromUserStars = function (user, appname, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({ _id : user._id},
+  collection.update({ user_name : user.user_name},
     { $pullAll : { user_starred : [appname] }}, function (err, result) {
       if (err) {
         deferred.reject(err);

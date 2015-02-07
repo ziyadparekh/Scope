@@ -1,0 +1,15 @@
+upstream <%= obj.server %>:<%= obj.app_port %> {
+       server <%= obj.server %>:<%= obj.app_port %>;
+}
+server {
+       listen 8080;
+       client_max_body_size 4G;
+       server_name <%= obj.app_name %>.localhost;
+       keepalive_timeout 5;
+       location / {
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header Host $http_host;
+              proxy_redirect off;
+              proxy_pass http://<%= obj.server %>:<%= obj.app_port %>;
+       }
+}

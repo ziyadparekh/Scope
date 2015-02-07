@@ -35,8 +35,8 @@ if (cluster.isMaster) {
         spawn();
     });
 } else {
-//    app.listen(process.env.PORT || 3010);
-    app.listen(3010);
+   app.listen(process.env.PORT || 3010);
+    
 
     util.puts("Protobox started on port 3010");
 

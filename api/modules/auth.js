@@ -25,7 +25,7 @@ passport.use(
 new GithubStrategy({
     clientID: config.github_client,
     clientSecret: config.github_secret,
-    callbackURL: process.env.LOCAL+"/auth/github/callback",
+    callbackURL: "/auth/github/callback",
     passReqToCallback: true
 },
 function(req, accessToken, refreshToken, profile, done) {

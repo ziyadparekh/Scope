@@ -93,8 +93,10 @@ AppController.post = function (req, res, next) {
                     console.log(result);
                     database.saveAppIdToUserPortfolio(result[0], user, 'users', db).then(function () {
                         shellHelpers.setupGitRepo(appObject, user).then(function () {
-                            db.close();
-                            resHelper.sendSuccess(res, "App successfully created", appObject);
+                            helpers.writeNginxFile(appObject).then(function () {
+                                db.close();
+                                resHelper.sendSuccess(res, "App successfully created", appObject);
+                            }).fail(function (err) { resHelper.send500(res, err ); })
                         }).fail(function (err) { resHelper.send500(res, err ); })
                     }).fail(function (err) { resHelper.send500(res, err.message ); })
                 }).fail(function (err) { resHelper.send500(res, err.message); })
@@ -127,7 +129,7 @@ AppController.star = function (req, res, next) {
     var appname = req.appname;
     var app = req.app;
 
-    if (app.app_stars.indexOf(user.username) > -1) {
+    if (app.app_stars.indexOf(user.user_name) > -1) {
         return resHelper.send401(res, 'You have already starred this app');
     };
 
@@ -146,7 +148,7 @@ AppController.unstar = function (req, res, next) {
     var appname = req.appname;
     var app = req.app;
 
-    if (app.app_stars.indexOf(user.username) === -1) {
+    if (app.app_stars.indexOf(user.user_name) === -1) {
         return resHelper.send401(res, 'You never starred this app');
     };
 

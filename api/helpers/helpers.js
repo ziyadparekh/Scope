@@ -5,6 +5,7 @@ var crypto      = require('crypto');
 var fs          = require('fs');
 var path        = require('path');
 var docker      = require('./generateDockerfile');
+var nginx      	= require('./generateNginx');
 var mkDeffered  = require('../helpers/deferred');
 var database    = require('../database/database');
 var AppModel    = require('../models/models').defaultAppModel;
@@ -60,8 +61,22 @@ exports.writeDockerFile = function (app) {
 		docker.renderDockerFile(data, app).then(function (file) {
 			docker.writeDockerFile(file, app).then(function () {
 				def.resolve();
-			}).fail(function (err) { def.reject(err); });
-		}).fail(function (err) { def.reject(err); });
+			}).fail(function (err) { def.reject(err); })
+		}).fail(function (err) { def.reject(err); })
+	}).fail(function (err) { def.reject(err); });
+
+	return def.getPromise();
+};
+
+exports.writeNginxFile = function (app) {
+	var def = mkDeffered();
+	app = _.extend(app, {server : config.server});
+	nginx.readNginxFile().then(function (data) {
+		nginx.renderNginxFile(data, app).then(function (file) {
+			nginx.writeNginxFile(file, app).then(function () {
+				def.resolve();
+			}).fail(function (err) { def.reject(err); })
+		}).fail(function (err) { def.reject(err); })
 	}).fail(function (err) { def.reject(err); });
 
 	return def.getPromise();
@@ -74,7 +89,7 @@ exports.formatApp = function (appname, start, user, port) {
 	var app = _.extend(AppModel, {
 		app_name  	: appname,
 		app_start 	: start,
-		app_user  	: user.username,
+		app_user  	: user.user_name,
 		app_port  	: port + 1,
 		app_repo  	: gitRepo,
 		app_updated	: new Date(),

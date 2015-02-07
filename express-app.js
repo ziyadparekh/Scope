@@ -10,8 +10,10 @@ var morgan          = require('morgan');
 var path            = require('path');
 
 var express 		= require('express');
+var config          = require('./api/config');
 var bodyParser 		= require('body-parser');
 var errorHandler 	= require('errorhandler');
+var MongoStore      = require('connect-mongo')(session);
 var util 			= require('util');
 var middle 			= require('./api/middleware/middle');
 var index           = require('./routes/index');
@@ -25,6 +27,8 @@ var validateAppRequest = middle.validateAppRequest;
 var doesAppExist = middle.doesAppExist;
 var doesStartExist = middle.doesStartExist;
 var ensureAppExists = middle.ensureAppExists;
+var differentUser = middle.differentUser;
+var isUserRegistered = middle.isUserRegistered;
 
 var validateUserRequest = middle.validateUserRequest;
 var doesUserExist = middle.doesUserExist;
@@ -57,12 +61,20 @@ app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-app.use(morgan('combined'));
-app.use(errorHandler({ dumpExceptions: false, showStack: false }));
-app.use(session({
-    secret: 'tobo2obo',
-    cookie: { maxAge: 60 * 60 * 10008 }
-}));
+if(process.env.PORT){
+    app.use(morgan('combined'));
+} else {
+    app.use(morgan('combined'));
+    app.use(errorHandler({ dumpExceptions: false, showStack: false }));
+    app.use(session({
+        secret: 'tobo2obo',
+        cookie: { maxAge: 60 * 60 * 10008 },
+        store: new MongoStore({ url : config.db_url }),
+        resave: true,
+        saveUninitialized: true
+    }));
+}
+
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -96,7 +108,7 @@ app.get('/auth/github/callback', passport.authenticate('github', { failureRedire
  */
 //app.post('/user', validateUserRequest, doesUserExist, user.post);
 
-app.get('/user/apps', auth, user.listApps);
+app.get('/user/apps', ensureLoggedIn('/login'), user.listApps);
 
 /*
  * Edit your user account
@@ -104,6 +116,12 @@ app.get('/user/apps', auth, user.listApps);
  * @raw: curl -X PUT -u "ziyadparekh:123456" -d "password=test&rsakey=1234567" http://localhost:3010/user
  */
 app.put('/user', ensureLoggedIn('/login'), user.update);
+
+// Follow user
+app.post('/user/follow', ensureLoggedIn('/login'), differentUser, isUserRegistered, user.follow);
+// Unfollow user
+app.post('/user/unfollow', ensureLoggedIn('/login'), differentUser, isUserRegistered, user.unfollow);
+
 
 /*
  * Delete your user account
@@ -143,5 +161,6 @@ app.get('/list/latest', feed.latestApps);
 app.get('/list/updated', feed.latestUpdatedApps);
 app.get('/list/trending', feed.trendingApps);
 
+app.get('/logout', index.logout);
 
 app.get('/', ensureLoggedIn('/login'), index.index);

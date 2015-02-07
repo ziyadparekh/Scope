@@ -10,3 +10,11 @@ exports.index = function(req, res){
     var url = "http://localhost:3010";
     res.json({url:url, user: user});
 };
+
+exports.logout = function(req, res){
+    if(req && req.user && req.user.id){
+        req.session.destroy();
+        res.redirect('/login');
+    }else
+    res.redirect('/login');
+};

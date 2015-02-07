@@ -18,5 +18,8 @@ exports.defaultUserModel = {
 	user_name: "",
 	user_email: "",
 	user_apps: [],
-	user_starred: []
+	user_rsakey: false,
+	user_starred: [],
+	user_followers: [],
+	user_following: [],
 };

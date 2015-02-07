@@ -10,7 +10,9 @@ var url         = config.db_url;
 
 
 var denied = function (req, res, next) {
-  return resHelper.send401(res, "You are not logged in");
+	res.render({
+		status: 'failure'
+	});
 };
 
 var doesStartExist = function (req, res, next) {
@@ -66,6 +68,18 @@ var doesAppExist = function (req, res, next) {
 	}).fail(function (err) { resHelper.send500(res, err.message )});
 };
 
+var differentUser = function (req, res, next) {
+	var username = req.user.user_name;
+	var targetUser = req.body.username;
+
+	if (username === targetUser) {
+		resHelper.send401(res, "This isn't possible");
+	} else {
+		req.username = req.body.username;
+		next();
+	}
+};
+
 var ensureAppExists = function (req, res, next) {
 	var appname = req.body.appname;
 
@@ -82,6 +96,16 @@ var ensureAppExists = function (req, res, next) {
 		}).fail(function (err) { resHelper.send500(res, "No App found"); })
 	}).fail(function (err) { resHelper.send500(res, err.message); })
 };
+
+var isUserRegistered = function (req, res, next) {
+	var username = req.username;
+	helpers.getDb().then(function (db) {
+		database.findSingleObjectInCollection(username, 'users', db).then(function () {
+			db.close();
+			next();
+		}).fail(function (err) { resHelper.send401(res, 'No user was found'); });
+	}).fail(function (err) { resHelper.send500(res, err.message ); });
+}
 
 var doesUserExist = function (req, res, next) {
 	var username = req.username;
@@ -233,4 +257,6 @@ module.exports.doesStartExist	  	= doesStartExist;
 module.exports.validateUserRequest	= validateUserRequest;
 module.exports.doesUserExist	  	= doesUserExist;
 module.exports.ensureAppExists	  	= ensureAppExists;
+module.exports.differentUser		= differentUser;
+module.exports.isUserRegistered		= isUserRegistered;
 module.exports.denied               = denied;

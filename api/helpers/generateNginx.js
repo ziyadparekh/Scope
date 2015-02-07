@@ -6,30 +6,33 @@ var fs = require('fs');
 var path = require('path');
 var mkDeffered = require('../helpers/deferred');
 
-exports.readDockerFile = function () {
+var nginx = {};
+
+nginx.readNginxFile = function () {
 	var def = mkDeffered();
 	var path = config.app_dir + '/templates/';
-	fs.readFile(path + 'dockerfileTemplate.html',{encoding : 'ascii'}, function (err, data) {
+	fs.readFile(path + 'nginxTemplate.html',{encoding : 'ascii'}, function (err, data) {
 		if (err) { def.reject(err) }
 		else { def.resolve(data); }
 	});
 	return def.getPromise();
-};
+}
 
-exports.renderDockerFile = function (data, app) {
+nginx.renderNginxFile = function (data, app) {
 	var def = mkDeffered();
 	var renderedString = _.template(data);
-	var dockerfile = renderedString(app);
-	def.resolve(dockerfile);
+	var nginxfile = renderedString(app);
+	def.resolve(nginxfile);
 	return def.getPromise();
 };
 
-exports.writeDockerFile = function (file, app) {
+nginx.writeNginxFile = function (file, app) {
 	var def = mkDeffered();
-	var fullPath = path.join(config.apps_home_dir, app.app_user, app.app_name);
-	fs.writeFile(fullPath + '/Dockerfile', file, function (err) {
+	fs.writeFile(config.nginxpath + app.app_name, file, function (err) {
 		if (err) { def.reject(err) }
 		else { def.resolve() };
 	});
 	return def.getPromise();
 };
+
+module.exports = nginx;
