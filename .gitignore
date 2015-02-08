@@ -1,3 +1,4 @@
+src/scss/semantic
 public/views/app/js/app-built.js
 public/compiled/*
 node_modules
