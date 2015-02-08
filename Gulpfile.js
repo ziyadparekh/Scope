@@ -43,7 +43,10 @@ function logFile(file) {
 var paths = {
   sassEntries: ['./src/scss/entries/**/*.scss'],
   sassSrc: ['./src/scss/**/*.scss', './src/css/**/*.css'],
-  sassDest: './public/compiled/css'
+  icons: ['./src/scss/entries/semantic/**/*'],
+  iconsDest: './public/compiled/css/semantic',
+  sassDest: './public/compiled/css',
+  module_path: 'node_modules'
 };
 
 gulp.task("webpack", function(cb) {
@@ -109,10 +112,16 @@ gulp.task('sass', function () {
         .pipe(tap(logFile));
 });
 
+gulp.task('copy', function () {
+    gulp.src(paths.icons)
+        .pipe(gulp.dest(paths.iconsDest))
+        .pipe(tap(logFile));
+});
+
 gulp.task('dev-javascript', function (cb) {
 	gulp.watch(["src/**/*"], ["webpack"]);
   gulp.watch(paths.sassSrc, ['sass']);
-    runSequence(['webpack', 'webpack-dev-server', 'unit-tests', 'sass'], cb);
+    runSequence(['webpack', 'webpack-dev-server', 'unit-tests', 'sass', 'copy'], cb);
 });
 
 gulp.task('default', function (cb) {
