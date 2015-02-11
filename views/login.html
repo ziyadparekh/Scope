@@ -1,0 +1,37 @@
+{% extends 'common/default.html' %}
+
+{% block style_middle %}
+    {% parent %}
+
+    <link rel="stylesheet" href="/compiled/css/homepage.css">
+{% endblock %}
+
+{% block content %}
+<div class="masthead segment">
+  <div class="ui page grid">
+    <div class="column">
+      <div class="introduction">
+        <a class="ui black version label transition visible" href="https://github.com/Semantic-Org/Semantic-UI/blob/master/RELEASE-NOTES.md">
+          1.8.1
+        </a>
+        <h1 class="ui inverted header">
+          <span class="library transition visible">
+            Semantic UI
+          </span>
+          <b data-text="User Interface">User Interface</b>
+          <span class="typed-cursor">|</span>
+          <span class="text">is the vocabulary of the web.</span>
+        </h1>
+      </div>
+    </div>
+  </div>
+</div>
+    <!-- <div class='pull-right'>
+        <a href="/auth/github" class='ui button'><i class="github icon"></i> Login</a>
+    </div> -->
+{% endblock %}
+
+{% block script_foot %}
+    {% parent %}
+    <script src="/compiled/js/app.js" type="text/javascript"></script>
+{% endblock %}

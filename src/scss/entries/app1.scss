@@ -1,3 +1,61 @@
-/*@import "../../../node_modules/semantic-ui/dist/semantic.css"; 
-*/
-@import "semantic/semantic.scss"; 
+@import "semantic/semantic.scss";
+
+body {
+	background: #ffffff;
+	color: #333;
+}
+
+.logo {
+	float: left;
+	width: 35px;
+	margin-right: 1em;
+}
+
+.following.bar {
+	position: absolute;
+	top: 0px;
+	z-index: 900;
+	left: 0%;
+	padding: 2em 0em;
+	width: 100%;
+	box-shadow: 0px 0px 0px 0px transparent;
+	border-bottom: 1px solid transparent;
+	transition: padding 0.5s ease, background 0.5s ease, box-shadow 0.5s ease, border 0.5s ease;
+}
+.following.bar.light{
+	background-color: #FFFFFF;
+	border-bottom: 1px solid #DDDDDD;
+	box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.04);
+}
+
+.following.bar .column > .menu {
+	margin-top: 0px;
+	height: 35px;
+	font-weight: bold;
+}
+
+.following.bar {
+	.ui.secondary.menu>.item, .ui.secondary.menu>.menu>.item {
+		padding: .5em .8em;
+	}
+}
+
+.masthead {
+	position: relative;
+	overflow: hidden;
+	text-align: center;
+	padding: 0em;
+	color: rgba(255, 255, 255, 0.9);
+	margin-bottom: 0px;
+	border-bottom: none;
+	background-color: #00B5AD;
+	background-position: 50% 50%;
+	background-image: -webkit-radial-gradient(farthest-corner, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.95));
+	background-image: radial-gradient(farthest-corner, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.95));
+	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
+	-ms-transition: background-color 3s ease-in-out 1s;
+	-moz-transition: background-color 3s ease-in-out 1s;
+	-webkit-transition: background-color 3s ease-in-out 1s;
+	transition: background-color 3s ease-in-out 1s;
+}

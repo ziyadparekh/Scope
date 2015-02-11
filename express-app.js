@@ -8,6 +8,7 @@ var passport        = require('passport');
 var toobusy         = require('toobusy');
 var morgan          = require('morgan');
 var path            = require('path');
+var swig            = require('swig');
 
 var express 		= require('express');
 var config          = require('./api/config');
@@ -50,7 +51,8 @@ process.on('uncaughtException', function(err){
     process.exit(0);
 });
 
-app.set('view engine', 'ejs');
+app.engine('html', swig.renderFile);
+app.set('view engine', 'html');
 
 app.set('views', __dirname + '/views');
 app.use(express.static(path.join(__dirname, 'public')));

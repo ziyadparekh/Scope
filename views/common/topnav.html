@@ -1,0 +1,24 @@
+<div class="following bar light">
+    <div class="ui page grid">
+        <div class="column">
+            <div class="ui logo shape">
+                <div class="sided">
+                    <div class="active ui side">
+                        <img class="ui image" src="images/logo.png">
+                    </div>
+                </div>
+            </div>
+            <div class="ui right floated secondary menu">
+		        <div class="item">
+		          <iframe class="github" src="http://ghbtns.com/github-btn.html?user=semantic-org&amp;repo=semantic-ui&amp;type=watch&amp;count=true" allowtransparency="true" frameborder="0" scrolling="0" width="100" height="20"></iframe>
+		        </div>
+	      	</div>
+		    <div class="ui large secondary network menu">
+
+	        	{% for nav in navMenu %}
+	        		<a href="{{ nav.link }}" data-site="learn" class="view-ui item">{{ nav.title }}</a>
+	        	{% endfor %}
+		    </div>
+	    </div>
+    </div>
+</div>

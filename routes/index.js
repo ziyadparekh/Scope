@@ -1,7 +1,9 @@
 'use strict';
 
+var topnav = require('./configs/schema').topnav;
+
 exports.login = function(req, res){
-    res.render('login');
+    res.render('login', topnav);
 };
 
 exports.index = function(req, res){

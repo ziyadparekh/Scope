@@ -1,0 +1,280 @@
+/*******************************
+            Homepage
+*******************************/
+
+#example.index .pusher > .page {
+  background-color: #FFFFFF;
+}
+
+@media only screen and (max-width: 992px) {
+  html {
+    overflow-x: visible;
+    -webkit-overflow-scrolling: auto;
+  }
+}
+#example > .pusher {
+  display: block;
+  flex-direction: initial;
+}
+#example > .pusher > .full.height {
+  flex: none !important;
+}
+
+/*--------------
+    Masthead
+---------------*/
+
+#example.index .masthead {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 0em;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0px;
+  border-bottom: none;
+
+  background-color: #00B5AD;
+  background-position: 50% 50%;
+  background-image: -webkit-radial-gradient(farthest-corner, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.95));
+  background-image: radial-gradient(farthest-corner, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.95));
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+
+  -ms-transition: background-color 3s ease-in-out 1s;
+  -moz-transition: background-color 3s ease-in-out 1s;
+  -webkit-transition: background-color 3s ease-in-out 1s;
+  transition: background-color 3s ease-in-out 1s;
+}
+#example.index .masthead.zoomed {
+  background-color: #555555;
+}
+#example .masthead .grid {
+  margin: 0em;
+  padding: 15rem 0em;
+}
+#example.index .following.bar iframe.github {
+  margin-top: 0px;
+}
+#example.index.pushed .masthead,
+#example.index.pushed .following.bar {
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+
+#example.index .fixed.following.bar {
+  background-image: none;
+}
+#example.index .fixed.following.bar {
+  position: fixed;
+  top: 0px;
+  padding: 1em 0em;
+  background-color: #FFFFFF;
+}
+#example.index .fixed.light.following.bar {
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #DDDDDD;
+  box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.04);
+}
+
+#example.index .masthead.segment .typed-cursor {
+  position: relative;
+  top: -0.05em;
+  left: -0.25em;
+  opacity: 1;
+  -webkit-animation: blink 0.7s infinite;
+  -moz-animation: blink 0.7s infinite;
+  animation: blink 0.7s infinite;
+}
+@keyframes blink {
+  0% { opacity:1; }
+  50% { opacity:0; }
+  100% { opacity:1; }
+}
+@-webkit-keyframes blink {
+  0% { opacity:1; }
+  50% { opacity:0; }
+  100% { opacity:1; }
+}
+@-moz-keyframes blink {
+  0% { opacity:1; }
+  50% { opacity:0; }
+  100% { opacity:1; }
+}
+
+#example.index .vertical.segment {
+  box-shadow: none;
+}
+
+#example.index .masthead.segment h1 {
+  font-size: 3em;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.2;
+  margin: 0px 0px 0px;
+  padding-bottom: 0px;
+  -moz-perspective: 500px;
+  -webkit-perspective: 500px;
+  perspective: 500px;
+  -moz-transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+#example.index .masthead.segment h1 > .library {
+  visibility: hidden;
+  display: block;
+  font-size: 1.75em;
+  color: #FFFFFF;
+  font-weight: bold;
+}
+#example.index .masthead.segment h1 b {
+  display: inline-block;
+  font-weight: 300;
+  color: #FFFFFF;
+}
+#example.index .masthead.segment h1 .text {
+  display: inline-block;
+  font-weight: 300;
+  margin-left: -0.4em;
+}
+#example.index .masthead h2 {
+  font-weight: normal;
+  margin: 0px 0 16px 0px;
+  font-size: 1.75em;
+  border-bottom: none;
+  line-height: 1;
+}
+#example.index .masthead p {
+  font-size: 1.5em;
+  margin: 1em 0em 1.5em;
+  padding: 0px;
+}
+#example.index .ui.header {
+  font-weight: normal;
+}
+
+#example.index .introduction {
+  position: relative;
+  clear: both;
+  display: block;
+  text-align: center;
+}
+#example.index .introduction .buttons {
+  margin-top: 3em;
+}
+
+
+#example.index .advertisement {
+  display: none !important;
+  padding-left: 0;
+  position: absolute;
+  left: auto;
+  right: 6em;
+  top: 50%;
+  transform: translateY(-50%);
+  vertical-align: top;
+}
+#example.index .fixed.launch.button {
+  display: none;
+  top: 100px;
+}
+#example.index .main.menu {
+  top: 0px;
+}
+#example.index pre.console {
+  height: 120px;
+}
+
+/*--------------
+    Features
+---------------*/
+
+#example.index .hidden.code {
+  visibility: hidden;
+}
+
+#example.index .demo.row .example {
+  clear: both;
+  padding-top: 1.5em;
+  margin-top: 1.5em;
+}
+#example.index .demo.row .example:first-child {
+  margin-top: 0;
+  padding-top: 0;
+}
+#example.index .demo.row .example:last-child {
+  margin-bottom: 0em;
+}
+
+/*--------------
+    Following
+---------------*/
+
+#example.index .following.bar {
+  position: absolute;
+  top: 0px;
+  z-index: 900;
+  left: 0%;
+  padding: 2em 0em;
+  width: 100%;
+  box-shadow: 0px 0px 0px 0px transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    padding 0.5s ease,
+    background 0.5s ease,
+    box-shadow 0.5s ease,
+    border 0.5s ease
+  ;
+}
+#example.index .following.bar > .menu .item {
+  transition: all 0.5s ease;
+}
+#example.index.pushed .following.bar .menu .item,
+#example.index.pushed .following.bar {
+  transition: none;
+}
+#example.index .following.bar .additional.item {
+  display: none;
+}
+#example.index .following.bar .additional.item[data-site="learn"]:hover {
+  color: #D9499A;
+}
+#example.index .following.bar span.additional.item {
+  cursor: default;
+  color: rgba(0, 0, 0, 0.2);
+}
+#example.index .following.bar .inverted span.additional.item {
+  color: rgba(255, 255, 255, 0.2);
+}
+#example.index .following.bar .column > .menu {
+  margin-top: 0px;
+  height: 35px;
+  font-weight: bold;
+}
+#example.index .following.bar .network.menu .view-ui {
+  margin-right: 1em;
+}
+#example.index .fixed.following.bar .network.menu .view-ui {
+  color: #00B5AD;
+}
+#example.index .fixed.following.bar .inverted.network.menu .view-ui {
+  color: #6DFFFF;
+}
+#example.index .following .logo {
+  float: left;
+  width: 35px;
+  margin-right: 1em;
+}
+#example.index .following .logo .side {
+  width: 35px;
+}
+#example .masthead .version.label:after {
+  background-color: #000000 !important;
+}
+#example.index .following .version.label {
+  margin: 0.25em 0px 0px 1em;
+}
+
+#example.index .introduction .version.label {
+  visibility: hidden;
+}
