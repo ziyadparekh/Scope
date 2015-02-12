@@ -3,21 +3,26 @@
 
 echo ""
 echo ""
-echo -e "\033[33m\033[1m         
-                          _          _            
-          _ __   ___   __| | ___ ___| |_ ___ _ __ 
-         | '_ \ / _ \ / _  |/ _ \ __| __/ _ \ '__|
-         | | | | (_) | (_| |  __\__ \ |_  __/ |   
-         |_| |_|\___/ \__,_|\___|___/\__\___|_|   \033[22m\033[39m
-                                                  
+echo -e "
+       _                     _
+  __ _| |_ ___  _ __ ___    / \   _ __  _ __
+ / _' | __/ _ \| '_ ' _ \  / _ \ | '_ \| '_ \
+| (_| | || (_) | | | | | |/ ___ \| |_) | |_) |
+ \__,_|\__\___/|_| |_| |_/_/   \_\ .__/| .__/
+                                 |_|   |_|
+
           \033[1mOpen Source Node.js Hosting Platform.\033[22m
-              http://github.com/nodester"
+              http://github.com/AtomApp"
 echo ""
 echo ""
 
+
 SECRETKEY="PleaseRestartMyAppMKey"
-GITBASE=/Users/ziyadparekh/Scope/git
-APPSBASE=/Users/ziyadparekh/Scope/app
+#GITBASE=/Users/ziyadparekh/Scope/git
+#APPSBASE=/Users/ziyadparekh/Scope/app
+
+GITBASE=/Users/ziyad/scope/git
+APPSBASE=/Users/ziyad/scope/app
 
 OLD_PWD=$PWD
 gitdirsuffix=${PWD##*/}
@@ -28,12 +33,12 @@ MY_LEN=$(( ${OLD_PWDLEN} - ${GITBASELEN} - 4 ));
 appdir="${APPSBASE}${OLD_PWD:${GITBASELEN}:${MY_LEN}}";
 
 if [ -d "${appdir}" ]; then
-  echo "Syncing repo with chroot"
+  echo "Syncing repo with container"
   cd ${appdir};
   unset GIT_DIR;
   git pull;
 else
-  echo "Fresh git clone into chroot"
+  echo "Fresh git clone into container"
   mkdir -p ${appdir};
   git clone . ${appdir};
   cd ${appdir};
@@ -58,7 +63,7 @@ fi
 cd $OLD_PWD
 
 echo "Attempting to restart your app: ${gitdir}"
-curl -X GET "http://localhost:3010/apps/reboot?repo_id=${gitdir}&restart_key=${SECRETKEY}"
+curl -X GET "http://localhost:3010/api/1/apps/reboot?repo_id=${gitdir}&restart_key=${SECRETKEY}"
 echo ""
 echo "App restarted.."
 echo ""

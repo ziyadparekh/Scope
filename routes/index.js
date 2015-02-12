@@ -20,3 +20,12 @@ exports.logout = function(req, res){
     }else
     res.redirect('/login');
 };
+
+exports.create = function (req, res) {
+  var js_vars = {};
+  if (req && req.user) {
+    var user = req.user;
+    js_vars.user = user
+  }
+  res.render('create', {js_vars: js_vars});
+};

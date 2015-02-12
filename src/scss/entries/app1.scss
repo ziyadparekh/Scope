@@ -1,4 +1,4 @@
-@import "semantic/semantic.scss";
+@import "../semantic/semantic.scss";
 
 body {
 	background: #ffffff;
@@ -12,7 +12,6 @@ body {
 }
 
 .following.bar {
-	position: absolute;
 	top: 0px;
 	z-index: 900;
 	left: 0%;

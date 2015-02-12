@@ -1,14 +1,16 @@
 'use strict';
 
-var BASE_PATH = '/Users/ziyadparekh/';
+var BASE_PATH = '/Users/ziyad/';
+var homebrew = '/opt/boxen/homebrew/';
+var mac = '/usr/local/';
 
 module.exports = {
 	server: '192.168.59.103',
-	nginxpath: '/usr/local/etc/nginx/sites-enabled/',
+	nginxpath: homebrew + 'etc/nginx/sites-enabled/',
 	db_url : 'mongodb://localhost:27017/scope',
-	app_dir:  BASE_PATH + 'Scope/api',
-	git_home_dir: BASE_PATH + 'Scope/git',
-	apps_home_dir: BASE_PATH + 'Scope/app',
+	app_dir:  BASE_PATH + 'scope/api',
+	git_home_dir: BASE_PATH + 'scope/git',
+	apps_home_dir: BASE_PATH + 'scope/app',
 	userid: 'ziyadparekh',
 	gituser: 'ziyadparekh',
 	git_dom: 'localhost',

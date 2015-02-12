@@ -1,10 +1,10 @@
-FROM ubuntu:14.04
+FROM centos:centos6
 
-# make sure apt is up to date
-RUN apt-get update
+# Enable EPEL for Node.js
+RUN rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
 
-# install nodejs and npm
-RUN apt-get install -y nodejs npm
+# Install Node.js and npm
+RUN yum install -y npm
 
 # add source files
 ADD . /var/www
@@ -21,4 +21,4 @@ RUN npm install
 EXPOSE <%= obj.app_port %>
 
 # run this after the container has been instantiated
-CMD ["nodejs", "<%= obj.app_start %>"]
+CMD ["node", "<%= obj.app_start %>"]

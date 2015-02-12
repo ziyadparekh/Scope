@@ -28,7 +28,7 @@
         {% endblock script_head %}
 
     {% endblock head %}
-    
+
 </head>
 <body id="example" class='index pushable {{ show_navbar ? 'has-navbar' : ''}}'>
 
@@ -39,7 +39,10 @@
 
 <div class="pusher">
     {% include 'topnav.html' %}
-    {% block content %}{% endblock content%}
+    <div class="ui hidden divider"></div>
+    <div class='ui page grid'>
+      {% block content %}{% endblock content%}
+    </div>
     <div id="push"></div>
 <!--     <div class="ui inverted black footer vertical segment" id="footer">
         <p class="text-muted credit">&copy; 1stdibs {{ year|default('') }}</p>
@@ -51,7 +54,12 @@
 {% block script_foot %}
 
     {# Add js variables from view_data:  #}
-
+    <script type='text/javascript'>
+            window.__SERVER_VARS__ = {};
+            {% for key, vars in js_vars %}
+            window.__SERVER_VARS__.{{ key }} = {{ vars|json_encode()|raw }};
+            {% endfor %}
+    </script>
     {% block script_foot_middle %}
     {% endblock script_foot_middle %}
 
