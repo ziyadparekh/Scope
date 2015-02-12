@@ -65,8 +65,7 @@ cd $OLD_PWD
 echo "Attempting to restart your app: ${gitdir}"
 curl -X GET "http://localhost:3010/api/1/apps/reboot?repo_id=${gitdir}&restart_key=${SECRETKEY}"
 echo ""
-echo "App restarted.."
 echo ""
-echo "  \m/ Nodester out \m/"
+echo "  \m/ AtomApp out \m/"
 
 exit 0;

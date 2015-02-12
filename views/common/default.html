@@ -39,14 +39,14 @@
 
 <div class="pusher">
     {% include 'topnav.html' %}
-    <div class="ui hidden divider"></div>
-    <div class='ui page grid'>
+    {% if not login %}
+      <div class="ui hidden divider"></div>
+      <div class='ui page grid'>
+    {% endif %}
       {% block content %}{% endblock content%}
     </div>
     <div id="push"></div>
-<!--     <div class="ui inverted black footer vertical segment" id="footer">
-        <p class="text-muted credit">&copy; 1stdibs {{ year|default('') }}</p>
-    </div> -->
+    {% include 'footer.html' %}
 </div>
 
 {% endblock default_content %}
