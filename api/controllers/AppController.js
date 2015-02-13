@@ -71,9 +71,9 @@ AppController.reboot = function (req, res, next) {
                 app_image: app.app_user + "/" + app.app_name,
                 app_updated: new Date()
             }, 'apps', db).then(function () {
-                db.close();
-                util.puts(logs);
-                resHelper.sendSuccess(res, "App successfully restarted");
+                  db.close();
+                  util.puts(logs);
+                  resHelper.sendSuccess(res, "App successfully restarted");
             }).fail(function (err) { resHelper.send500(res, err.message );})
         }).fail(function (err) { resHelper.send500(res, err.message );})
       }).fail(function (err) { resHelper.send500(res, err.message );})

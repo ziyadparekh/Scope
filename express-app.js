@@ -18,6 +18,7 @@ var MongoStore      = require('connect-mongo')(session);
 var util 			= require('util');
 var middle 			= require('./api/middleware/middle');
 var index           = require('./routes/index');
+var version         = config.api;
 
 var app = module.exports = express();
 
@@ -100,6 +101,11 @@ app.get('/auth/github/callback', passport.authenticate('github', { failureRedire
 // Need to implement
 
 
+/**
+ * Client side routes
+ */
+
+app.get('/app/create', ensureLoggedIn('/login'), index.create);
 
 /*
  * New user account registration
@@ -110,19 +116,19 @@ app.get('/auth/github/callback', passport.authenticate('github', { failureRedire
  */
 //app.post('/user', validateUserRequest, doesUserExist, user.post);
 
-app.get('/user/apps', ensureLoggedIn('/login'), user.listApps);
+app.get(version + '/user/apps', ensureLoggedIn('/login'), user.listApps);
 
 /*
  * Edit your user account
  * @Public: false, only with authentication
  * @raw: curl -X PUT -u "ziyadparekh:123456" -d "password=test&rsakey=1234567" http://localhost:3010/user
  */
-app.put('/user', ensureLoggedIn('/login'), user.update);
+app.put(version + '/user', ensureLoggedIn('/login'), user.update);
 
 // Follow user
-app.post('/user/follow', ensureLoggedIn('/login'), differentUser, isUserRegistered, user.follow);
+app.post(version + '/user/follow', ensureLoggedIn('/login'), differentUser, isUserRegistered, user.follow);
 // Unfollow user
-app.post('/user/unfollow', ensureLoggedIn('/login'), differentUser, isUserRegistered, user.unfollow);
+app.post(version + '/user/unfollow', ensureLoggedIn('/login'), differentUser, isUserRegistered, user.unfollow);
 
 
 /*
@@ -130,38 +136,38 @@ app.post('/user/unfollow', ensureLoggedIn('/login'), differentUser, isUserRegist
  * @Public: false, only with authentication
  * @raw: curl -X DELETE -u "ziyadparekh:123456" http://localhost:3010/user
 */
-app.delete('/user', ensureLoggedIn('/login'), user.delete);
+app.delete(version + '/user', ensureLoggedIn('/login'), user.delete);
 
 var _app_ = require('./api/controllers/AppController');
 
-app.get('/apps/reboot', findAppByRepoId, _app_.reboot);
-app.post('/apps/stop', ensureLoggedIn('/login'), authApp, _app_.stop);
-app.post('/apps/start', ensureLoggedIn('/login'), authApp, _app_.start);
+app.get(version + '/apps/reboot', findAppByRepoId, _app_.reboot);
+app.post(version + '/apps/stop', ensureLoggedIn('/login'), authApp, _app_.stop);
+app.post(version + '/apps/start', ensureLoggedIn('/login'), authApp, _app_.start);
 
-app.post('/apps/star', ensureLoggedIn('/login'), ensureAppExists, _app_.star);
-app.post('/apps/unstar', ensureLoggedIn('/login'), ensureAppExists, _app_.unstar);
+app.post(version + '/apps/star', ensureLoggedIn('/login'), ensureAppExists, _app_.star);
+app.post(version + '/apps/unstar', ensureLoggedIn('/login'), ensureAppExists, _app_.unstar);
 
 
-app.post('/apps/:appname', ensureLoggedIn('/login'), validateAppRequest, doesAppExist, _app_.post);
-app.post('/apps', validateAppRequest, doesAppExist, _app_.post);
+app.post(version + '/apps/:appname', ensureLoggedIn('/login'), validateAppRequest, doesAppExist, _app_.post);
+app.post(version + '/apps', validateAppRequest, doesAppExist, _app_.post);
 
-app.put('/apps', ensureLoggedIn('/login'), authApp, doesStartExist, _app_.update);
+app.put(version + '/apps', ensureLoggedIn('/login'), authApp, doesStartExist, _app_.update);
 
-app.get('/apps/logs', ensureLoggedIn('/login'), authApp, _app_.logs);
+app.get(version + '/apps/logs', ensureLoggedIn('/login'), authApp, _app_.logs);
 
 
 // app.put('/apps/:appname', auth, authApp, _app_.put);
 // app.put('/apps', auth, authApp, _app_.put);
 
-app.delete('/apps/:appname', ensureLoggedIn('/login'), authApp, _app_.delete);
-app.delete('/apps', ensureLoggedIn('/login'), authApp, _app_.delete);
+app.delete(version + '/apps/:appname', ensureLoggedIn('/login'), authApp, _app_.delete);
+app.delete(version + '/apps', ensureLoggedIn('/login'), authApp, _app_.delete);
 
 
 var feed = require('./api/controllers/FeedController');
 
-app.get('/list/latest', feed.latestApps);
-app.get('/list/updated', feed.latestUpdatedApps);
-app.get('/list/trending', feed.trendingApps);
+app.get(version + '/list/latest', feed.latestApps);
+app.get(version + '/list/updated', feed.latestUpdatedApps);
+app.get(version + '/list/trending', feed.trendingApps);
 
 app.get('/logout', index.logout);
 

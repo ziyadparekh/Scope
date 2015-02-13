@@ -1,16 +1,35 @@
 'use strict';
 
+var _ = require('underscore');
 var topnav = require('./configs/schema').topnav;
 
+var buildVars = function () {
+    var js_vars = {
+        title : '',
+        user: '',
+        navMenu: ''
+    }
+    return js_vars
+};
+
 exports.login = function(req, res){
-    res.render('login', topnav);
+    var js_vars = _.extend({}, buildVars(), {
+        navMenu : topnav.navMenu,
+        title: 'Welcome'
+    });
+    res.render('login', js_vars);
 };
 
 exports.index = function(req, res){
-    if(req)
-        var user = JSON.stringify(req.user);
-    var url = "http://localhost:3010";
-    res.json({url:url, user: user});
+    var js_vars = _.extend({}, buildVars(), {
+        navMenu : topnav.navMenu,
+        title: 'Welcome'
+    });
+    if (req && req.user) {
+        var user = req.user;
+        js_vars.user = user
+    }
+    res.render('home', js_vars);
 };
 
 exports.logout = function(req, res){
@@ -19,4 +38,16 @@ exports.logout = function(req, res){
         res.redirect('/login');
     }else
     res.redirect('/login');
+};
+
+exports.create = function (req, res) {
+    var js_vars = _.extend({}, buildVars(), {
+        navMenu : topnav.navMenu,
+        title: 'Welcome'
+    });
+    if (req && req.user) {
+        var user = req.user;
+        js_vars.user = user
+    }
+    res.render('create', js_vars);
 };

@@ -7,6 +7,7 @@
 window.$ = window.jQuery = require('jquery');
 
 require('semantic-ui/dist/semantic');
+require('lib/TopNav');
 // ---------------------------------------------------
 // Module Definition
 
