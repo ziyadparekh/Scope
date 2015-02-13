@@ -10,13 +10,13 @@ var morgan          = require('morgan');
 var path            = require('path');
 var swig            = require('swig');
 
-var express 		    = require('express');
+var express 		= require('express');
 var config          = require('./api/config');
-var bodyParser 		  = require('body-parser');
-var errorHandler 	  = require('errorhandler');
+var bodyParser 		= require('body-parser');
+var errorHandler 	= require('errorhandler');
 var MongoStore      = require('connect-mongo')(session);
-var util 			      = require('util');
-var middle 			    = require('./api/middleware/middle');
+var util 			= require('util');
+var middle 			= require('./api/middleware/middle');
 var index           = require('./routes/index');
 var version         = config.api;
 

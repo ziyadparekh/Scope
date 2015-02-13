@@ -3,8 +3,6 @@
 var baseUrl = 'http://localhost:3010';
 
 var topnav = {
-	title : 'Welcome',
-  login : true,
 	navMenu : [
 		{
 			title: 'Explore',
