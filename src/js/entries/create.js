@@ -1,9 +1,10 @@
 'use strict';
 
 var Loader = require('lib/loader');
-var CreateApp = require('views/UICreateAppView');
+var CreateAppWrapperView = require('views/wrappers/CreateAppWrapperView');
+var CreateAppWrapperViewConfig = require('configs/wrappers/CreateAppWrapperViewConfig');
 
 Loader().onReady(function () {
-  var createApp = new CreateApp();
+  var createApp = new CreateAppWrapperView(CreateAppWrapperViewConfig);
   $("#create-app").html(createApp.render().el);
 });

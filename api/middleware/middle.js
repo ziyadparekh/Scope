@@ -46,7 +46,7 @@ var validateAppRequest = function (req, res, next) {
 	var appname = req.body.appname || req.query.appname;
 	var start = req.body.start || req.query.start;
 
-	if (!/^[A-Z0-9_\-\.]*$/gi.test(appname))
+	if (!/^[A-Za-z]*$/gi.test(appname))
 		return resHelper.send400(res, 'Invalid appname, must be alphanumeric');
 
   if (config.app_names.indexOf(appname) > -1)

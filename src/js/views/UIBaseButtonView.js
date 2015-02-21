@@ -3,25 +3,53 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('lib/ZPBackbone');
-var template = require('@templates/UIBaseButtonTemplate');
+var Templates = require('@templates/UIBaseButtonTemplate');
 var UIBaseButtonView;
 
 UIBaseButtonView = Backbone.BaseView.extend({
 
+	template: Templates['ui-button'],
+
 	defaults: {
-		template: template['ui-button'],
-		templateVars: {
-			text: 'UIBaseButton',
-			className: 'primary',
-			id: 'UIBaseButton',
-			dataAttributes : 'data-title="UIBaseButton"'
-		}
+		className: ''
+	},
+
+	defaultKeys: ['template'],
+
+	events: {
+		'click .ui.button' : 'clickEventHandler'
+	},
+
+	viewEvents: {
+		'validationFailed' : 'disable',
+		'validationPassed' : 'enable'
 	},
 
 	initialize: function (options) {
-		this.options = _.extend(this.defaults, options);
-		this.templateVars = this.options.templateVars;
-		this.template = this.options.template;
+
+		options = _.extend({}, this.defaults, options);
+
+		_.each(this.defaultKeys, function (key) {
+			if (!_.isUndefined(options[key])) {
+				this[key] = options[key];
+			}
+		}, this);
+
+		this.templateVars = this.generateTemplateVars(options);
+
+		UIBaseButtonView.__super__.initialize.call(this, options);
+
+	},
+
+	generateTemplateVars: function (options) {
+		
+		var templateVars = {};
+		
+		_.each(options, function (val, key) {
+			templateVars[key] = val;
+		});
+
+		return templateVars;
 	},
 
 	render: function () {
@@ -34,9 +62,14 @@ UIBaseButtonView = Backbone.BaseView.extend({
 		console.log('click');
 	},
 
-	events: {
-		'click .ui.button' : 'clickEventHandler'
+	disable: function () {
+		this.$('.ui.button').disable();
+	},
+
+	enable: function () {
+		this.$('.ui.button').enable();
 	}
+
 });
 
 module.exports = UIBaseButtonView;

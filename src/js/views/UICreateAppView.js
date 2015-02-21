@@ -9,7 +9,7 @@ var UIBaseButtonView;
 UIBaseButtonView = Backbone.BaseView.extend({
 
   defaults: {
-    template: template['ui-app'],
+    template: template['ui-card'],
     templateVars: {
       text: 'UIBaseButton',
       className: 'primary',

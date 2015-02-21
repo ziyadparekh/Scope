@@ -18,24 +18,61 @@
 </div>
 </script>
 
-<script type='text/template' id='ui-app'>
-  <div class="ui segment">
-    <div class="ui card">
-      <div class="content">
-        <i class="right floated like icon"></i>
-        <i class="right floated star icon"></i>
-        <div class="header">Cute Dog</div>
-        <div class="extra content">
-          <span class="like">
-            <i class="like icon"></i>
-            Like
-          </span>
-          <span class="star">
-            <i class="star icon"></i>
-            Favorite
-          </span>
-        </div>
+<script type='text/template' id='ui-form'>
+  <form class="<%= obj.className %> ui form">
+    <div class="ui error message">
+      <div class="header">Action Forbidden</div>
+      <p>You can only sign up for an account once with a given e-mail address.</p>
+    </div>
+    <div class="one field">
+      <div class="field" id="runtime"></div>
+      <div class="field" id="appname"></div>
+      <div class="field" id="giturl"></div>
+      <div class="field" id="packages"></div>
+      <div class="field" id="environment"></div>
+    </div>
+    <div id="submit"></div>
+  </form>
+</script>
+
+<script type="text/template" id="ui-base-dropdown">
+  <div class="field">
+    <label><%= obj.label %></label>
+    <div class="ui fluid language selection dropdown">
+      <input type="hidden" name="language">
+      <i class="dropdown icon"></i>
+    <div class="default text"><%= obj.placeholder %></div>
+    <div class="menu">
+      <% _.each(obj.possibleVals, function (val, key) { %>
+        <div class="item" data-value="<%= key %>"><i class="<%= val.icon %>"></i><%= val.displayName %></div>
+      <% }); %>
+    </div>
+  </div>
+</script>
+
+<script type="text/template" id="ui-two-input-row">
+  <div class="twelve wide column inline fields">
+    <div class="<%= obj.keyColumnClass %>" id="key"></div>
+    <div class="<%= obj.valColumnClass %>" id="val"></div>
+    <div class="left floated one wide field" id="delete">
+      <div class="ui icon button delete">
+        <i class="trash outline icon"></i>
       </div>
     </div>
+  </div>
+</script>
+
+<script type='text/template' id='ui-group-input-view'>
+  <div class="field">
+    <div class='ui grid'>
+      <div class="sixteen wide column">
+        <div class="" id="add">
+          <div class="ui right floated green basic icon button addRow">
+            <i class="plus icon"></i>
+            Add Env Variable
+          </div>
+        </div>
+      </div>
+    <div class='<%= obj.rowsClassName %>'></div>
   </div>
 </script>
