@@ -18,11 +18,13 @@ echo ""
 
 
 SECRETKEY="PleaseRestartMyAppMKey"
-#GITBASE=/Users/ziyadparekh/Scope/git
-#APPSBASE=/Users/ziyadparekh/Scope/app
 
-GITBASE=/Users/ziyad/scope/git
-APPSBASE=/Users/ziyad/scope/app
+# Replace these two values with the path
+# to the git directory and app directory
+# where all user's git repos and apps are
+# installed
+GITBASE=/Users/ziyadparekh/Scope/git
+APPSBASE=/Users/ziyadparekh/Scope/app
 
 OLD_PWD=$PWD
 gitdirsuffix=${PWD##*/}
@@ -55,17 +57,12 @@ if [ -f ./.gitmodules ]; then
     git submodule update;
 fi
 
-# if [ -f ./package.json ]; then
-#     echo "Updating npm modules..."
-#     npm install
-# fi
-
 cd $OLD_PWD
 
 echo "Attempting to restart your app: ${gitdir}"
 curl -X GET "http://localhost:3010/api/1/apps/reboot?repo_id=${gitdir}&restart_key=${SECRETKEY}"
 echo ""
 echo ""
-echo "  \m/ AtomApp out \m/"
+echo "  \m/ Atom out \m/"
 
 exit 0;

@@ -9,6 +9,7 @@
   "author": "Ziyad Parekh",
   "license": "ISC",
   "dependencies": {
+    "backbone-associations": "^0.6.2",
     "backbone-base-and-form-view": "^0.8.0",
     "base64": "^2.1.0",
     "body-parser": "^1.10.1",

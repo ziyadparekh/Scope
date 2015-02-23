@@ -51,3 +51,14 @@ exports.create = function (req, res) {
     }
     res.render('create', js_vars);
 };
+
+exports.profile = function (req, res) {
+    var user = req.user;
+    var name = req.user.user_name;
+    var js_vars = _.extend({}, buildVars(), {
+        navMenu: topnav.navMenu,
+        title: name,
+        user: user
+    });
+    res.render('profile', js_vars);
+};

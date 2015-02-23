@@ -1,0 +1,41 @@
+<script type="text/template" id="profile-wrapper-view">
+    <div class="ui grid">
+        <div class="sixteen column wide">
+            <div class="five column wide" id="profile-image"></div>
+            <div class="eleven column wide" id="profile-details"></div>
+            <div class="five column wide" id="profile-user"></div>
+        </div>
+    </div>
+    <div class="ui grid">
+        <div class="sixteen column wide">
+            <div class="center aligned eight column wide" id="profile-menu"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="profile-image-view">
+    <img class="<%= obj.imageClass %>" src="<%= obj.src %>">
+</script>
+
+<script type="text/template" id="ui-base-input-view">
+    <p class="<%= obj.textClass %>"><%= obj.name %></p>
+</script>
+
+<script type="text/template" id="profile-menu-view">
+    <div class="ui secondary large pointing menu">
+        <% _.each(obj.leftMenuItems, function (item) { %>
+            <a data-name="<%= item.name %>" class="<%= item.active ? 'active' : "" %> item blue menu-item">
+                <i class="<%= item.icon %>"></i> <%= item.display %>
+            </a>
+        <% }); %>
+        <% if (obj.rightMenu) { %>
+            <div class="right menu">
+            <% _.each(obj.rightMenuItems, function (item) { %>
+                    <a data-name="<%= item.name %>" class="<%= item.active ? 'active' : "" %> blue item menu-item">
+                        <i class="<%= item.icon %>"></i> <%= icon.display %>
+                    </a>
+            <% }); %>
+            </div>
+        <% } %>
+    </div>
+</script>

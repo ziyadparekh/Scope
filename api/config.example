@@ -1,0 +1,22 @@
+'use strict';
+
+var BASE_PATH = '/Users/ziyad/';
+var homebrew = '/opt/boxen/homebrew/';
+var mac = '/usr/local/';
+
+module.exports = {
+	server: '192.168.59.103', //boot2docker ip for mac(change if you need to)
+	nginxpath: homebrew + 'etc/nginx/sites-enabled/',
+	db_url : 'mongodb://localhost:27017/scope',
+	app_dir:  BASE_PATH + 'scope/api',
+	git_home_dir: BASE_PATH + 'scope/git',
+	apps_home_dir: BASE_PATH + 'scope/app',
+	userid: 'YOUR USER',
+	gituser: 'YOUR GIT USER',
+	git_dom: 'localhost',
+  	app_names: ['web', 'www', 'admin', 'api'],
+  	access_token: 'superSecretAccessToken',
+  	api: '/api/1',
+  	github_secret: 'YOUR GITHUB SECRET',
+  	github_client: 'YOUR GITHUB CLIENT'
+};

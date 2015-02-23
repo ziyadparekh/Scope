@@ -107,6 +107,8 @@ app.get('/auth/github/callback', passport.authenticate('github', { failureRedire
 
 app.get('/app/create', ensureLoggedIn('/login'), index.create);
 
+app.get('/user/profile', ensureLoggedIn('login'), index.profile);
+
 /*
  * New user account registration
  * @Public: true with params

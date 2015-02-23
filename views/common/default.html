@@ -55,10 +55,8 @@
 
     {# Add js variables from view_data:  #}
     <script type='text/javascript'>
-            window.__SERVER_VARS__ = {};
-            {% for key, vars in js_vars %}
-            window.__SERVER_VARS__.{{ key }} = {{ vars|json_encode()|raw }};
-            {% endfor %}
+        window.__SERVER_VARS__ = {};
+        window.__SERVER_VARS__.user = {{ JSON.stringify(user) }};
     </script>
     {% block script_foot_middle %}
     {% endblock script_foot_middle %}
