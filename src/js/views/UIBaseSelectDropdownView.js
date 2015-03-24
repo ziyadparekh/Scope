@@ -36,7 +36,11 @@ UIBaseSelectDropdownView = UIBaseInputView.extend({
 
 	announceValue: function (val) {
 		this.triggerBubble('dropdown::changed', val);
-	}
+	},
+
+    getValue: function () {
+        return this.$("input").val();
+    }
 });
 
 module.exports = UIBaseSelectDropdownView;

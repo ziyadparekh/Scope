@@ -50,7 +50,7 @@ UIBaseGroupInputView = Backbone.BaseView.extend({
 
 	generateTemplateVars: function (options) {
 		var templateVars = {};
-		
+
 		_.each(options, function (val, key) {
 			templateVars[key] = val;
 		});
@@ -94,6 +94,12 @@ UIBaseGroupInputView = Backbone.BaseView.extend({
 			//this.$('.ui.addRow').enable();
 		}
 	},
+
+    getValue: function () {
+        _.each(this.subs, function (row) {
+            console.log(row);
+        });
+    }
 });
 
 module.exports = UIBaseGroupInputView;

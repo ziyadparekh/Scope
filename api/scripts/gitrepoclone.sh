@@ -23,16 +23,28 @@ SECRETKEY="PleaseRestartMyAppMKey"
 # to the git directory and app directory
 # where all user's git repos and apps are
 # installed
-GITBASE=/Users/ziyadparekh/Scope/git
-APPSBASE=/Users/ziyadparekh/Scope/app
+
+# GITBASE=/Users/ziyadparekh/Scope/git
+# APPSBASE=/Users/ziyadparekh/Scope/app
+
+GITBASE=/Users/ziyad/scope/git
+APPSBASE=/Users/ziyad/scope/app
+
 
 OLD_PWD=$PWD
+echo ${OLD_PWD}
 gitdirsuffix=${PWD##*/}
+echo ${gitdirsuffix}
 gitdir=${gitdirsuffix%.git}
+echo ${gitdir}
 GITBASELEN=${#GITBASE};
+echo ${GITBASELEN}
 OLD_PWDLEN=${#OLD_PWD};
+echo ${OLD_PWDLEN}
 MY_LEN=$(( ${OLD_PWDLEN} - ${GITBASELEN} - 4 ));
+echo ${MY_LEN}
 appdir="${APPSBASE}${OLD_PWD:${GITBASELEN}:${MY_LEN}}";
+echo ${appdir}
 
 if [ -d "${appdir}" ]; then
   echo "Syncing repo with container"

@@ -151,7 +151,7 @@ app.post(version + '/apps/unstar', ensureLoggedIn('/login'), ensureAppExists, _a
 
 
 app.post(version + '/apps/:appname', ensureLoggedIn('/login'), validateAppRequest, doesAppExist, _app_.post);
-app.post(version + '/apps', validateAppRequest, doesAppExist, _app_.post);
+app.post(version + '/apps', ensureLoggedIn('/login'), validateAppRequest, doesAppExist, _app_.post);
 
 app.put(version + '/apps', ensureLoggedIn('/login'), authApp, doesStartExist, _app_.update);
 

@@ -31,16 +31,14 @@ UIBaseInputView = Backbone.BaseView.extend({
 
 		this.templateVars = this.generateTemplateVars(options);
 
-		console.log(this);
-
 		UIBaseInputView.__super__.initialize.call(this);
 
 	},
 
 	generateTemplateVars: function (options) {
-		
+
 		var templateVars = {};
-		
+
 		_.each(options, function (val, key) {
 			templateVars[key] = val;
 		});
@@ -49,7 +47,7 @@ UIBaseInputView = Backbone.BaseView.extend({
 	},
 
 	validate: function () {
-		var val = this.$('input').val();
+		var val = this.getValue();
 
 		if (!this.validator.match(val)) {
 			this.triggerBubble('invalid');
@@ -61,12 +59,14 @@ UIBaseInputView = Backbone.BaseView.extend({
 
 	render: function () {
 
-		console.log(this.templateVars);
-
 		this.$el.html(this.template(this.templateVars));
 
 		return this;
-	}
+	},
+
+    getValue: function () {
+        return this.$('input').val();
+    }
 });
 
 module.exports = UIBaseInputView;

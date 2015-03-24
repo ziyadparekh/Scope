@@ -42,9 +42,9 @@ UIBaseButtonView = Backbone.BaseView.extend({
 	},
 
 	generateTemplateVars: function (options) {
-		
+
 		var templateVars = {};
-		
+
 		_.each(options, function (val, key) {
 			templateVars[key] = val;
 		});
@@ -60,6 +60,7 @@ UIBaseButtonView = Backbone.BaseView.extend({
 
 	clickEventHandler: function (e) {
 		console.log('click');
+        this.triggerBubble("ButtonClicked")
 	},
 
 	disable: function () {
