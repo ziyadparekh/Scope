@@ -45,7 +45,7 @@ exports.getUserPortfolio = function (user, collectionString, db) {
 exports.saveAppIdToUserPortfolio = function (app, user, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({_id : user._id},
+  collection.update({user_name : user.user_name},
     { $push: { user_apps : app._id }}, function (err, result) {
       if (err) {
         deferred.reject(err);
@@ -272,7 +272,7 @@ exports.findTrendingApps = function (limit, offset, collectionString, db) {
 exports.addFollowToUser = function (following, user, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({ _id : user._id },
+  collection.update({ user_name : user.user_name },
     { $push : { user_following : following}}, function (err, result) {
       if (err) {
         deferred.reject(err);
@@ -300,7 +300,7 @@ exports.addUserToFollow = function (username, following, collectionString, db) {
 exports.removeFollowFromUser = function (user, unfollow, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({ _id : user._id },
+  collection.update({ user_name : user.user_name },
     { $pullAll : { user_following : [unfollow]}}, function (err, result) {
       if (err) {
         deferred.reject(err);
@@ -314,7 +314,7 @@ exports.removeFollowFromUser = function (user, unfollow, collectionString, db) {
 exports.removeUserFromUnfollow = function (unfollow, user, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();
-  collection.update({ user_name : unfollow }, 
+  collection.update({ user_name : unfollow },
     { $pullAll : { user_followers : [user.user_name]}}, function (err, result) {
       if (err) {
         deferred.reject(err);

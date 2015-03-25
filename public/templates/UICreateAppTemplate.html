@@ -20,14 +20,16 @@
 
 <script type='text/template' id='ui-form'>
   <form class="<%= obj.className %> ui form">
-    <div class="ui error message">
-      <div class="header">Action Forbidden</div>
-      <p>You can only sign up for an account once with a given e-mail address.</p>
-    </div>
-    <div class="one field">
+    <div class="two fields">
       <div class="field" id="appname"></div>
       <div class="field" id="appstart"></div>
     </div>
+    <div class="one field">
+        <div class="field" id="description"></div>
+    </div>
+    <div class="ui divider"></div>
+    <div class="grouped fields" id="apptype"></div>
+    <div class="ui divider"></div>
     <div id="submit"></div>
   </form>
 </script>

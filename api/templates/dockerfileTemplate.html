@@ -13,6 +13,7 @@ ADD . /var/www
 WORKDIR /var/www
 
 ENV PORT <%= obj.app_port %>
+ENV ENVIRONMENT PRODUCTION
 
 # install the dependencies
 RUN npm install

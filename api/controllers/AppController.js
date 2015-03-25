@@ -25,6 +25,13 @@ AppController.logs = function (req, res, next) {
     }).fail(function (err) { resHelper.send500(res, err.message); });
 };
 
+AppController.getAppByAppname = function (req, res, next) {
+    var user = req.user;
+    var app = req.app;
+    var appname = req.appname;
+    resHelper.sendSuccess(res, appname, app);
+};
+
 AppController.update = function (req, res, next) {
     var app = req.app;
     var start = req.start;
@@ -85,10 +92,14 @@ AppController.post = function (req, res, next) {
     var user = req.user;
     var appname = req.app_name.toLowerCase();
     var start = req.start;
+    var extra = {
+        type: req.body.type,
+        description: req.body.description
+    };
 
     helpers.getDb().then(function (db) {
         database.getNextAvailablePort('apps', db).then(function (lastSavedApp) {
-            helpers.formatApp(appname, start, user, lastSavedApp.port).then(function (appObject) {
+            helpers.formatApp(appname, start, extra, user, lastSavedApp.port).then(function (appObject) {
                 database.saveAppToNextPort(appObject, 'apps', db).then(function (result) {
                     console.log(result);
                     database.saveAppIdToUserPortfolio(result[0], user, 'users', db).then(function () {

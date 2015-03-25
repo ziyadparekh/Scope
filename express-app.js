@@ -142,6 +142,8 @@ app.delete(version + '/user', ensureLoggedIn('/login'), user.delete);
 
 var _app_ = require('./api/controllers/AppController');
 
+app.get(version + '/apps/:appname', ensureAppExists, _app_.getAppByAppname);
+
 app.get(version + '/apps/reboot', findAppByRepoId, _app_.reboot);
 app.post(version + '/apps/stop', ensureLoggedIn('/login'), authApp, _app_.stop);
 app.post(version + '/apps/start', ensureLoggedIn('/login'), authApp, _app_.start);

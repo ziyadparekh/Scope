@@ -3,28 +3,21 @@
 var $ = require('jquery');
 var _ = require('underscore');
 var Backbone = require('lib/ZPBackbone');
-var BaseModel = require('models/BaseModel');
-var UIBaseAppInfoView = require("views/UIBaseAppInfoView");
+var AppModel = require('models/AppModel');
 var AlertView = require('views/UIAlertView');
 
 var CreateAppWrapperView;
 
-var AppModel = BaseModel.extend({
-    url: function () {
-        return "/api/1/apps"
-    }
-});
-
 var AlertViewConfig = {
     size: "small",
-    color: "error"
+    color: "info"
 };
 
 CreateAppWrapperView = Backbone.BaseView.extend({
 
 	defaults: {},
 
-	defaultKeys: ['subViewConfig', 'template'],
+	defaultKeys: ['subViewConfig', 'template', "AppInfoConfig"],
 
 	viewEvents: {
 		'dropdown::changed' : 'onDropDownChanged',
@@ -72,6 +65,7 @@ CreateAppWrapperView = Backbone.BaseView.extend({
 	},
 
     createApp: function () {
+        this.$("form").addClass("loading");
         var self = this;
         var obj = this.subs.get("form").getFormValue();
         this.model.set(obj)
@@ -79,19 +73,17 @@ CreateAppWrapperView = Backbone.BaseView.extend({
             self.showAppDetails();
         }).fail(function (err) {
             self.showError(err);
+        }).always(function () {
+            self.$("form").removeClass("loading");
         });
     },
 
     showAppDetails: function () {
-        console.log(this.model.toJSON());
-        this.subs.addConfig("appInfo", {
-            construct: UIBaseAppInfoView,
-            location: "#app-info",
-            singleton: true,
-            options: {}
-        });
+        this.$("#alertView").empty();
+        this.subs.addConfig("appInfo", this.AppInfoConfig)
         this.subs.add("appInfo", {model : this.model});
-        this.subs.get("appInfo").render().place("#app-info");
+        this.$("#create-form").empty();
+        this.subs.get("appInfo").render().place("#create-form");
     },
 
     showError: function (err) {

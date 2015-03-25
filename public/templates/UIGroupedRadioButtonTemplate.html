@@ -1,0 +1,11 @@
+<script type='text/template' id='ui-grouped-radio-button'>
+    <label for="<%= obj.for %>"><%= obj.label %></label>
+    <% _.each(obj.possibleVals, function (val, key) { %>
+        <div class="field">
+              <div class="ui radio checkbox checked">
+                <input type="radio" name="<%= obj.for %>" value="<%= key %>">
+                <label><%= val %></label>
+              </div>
+        </div>
+    <% }); %>
+</script>

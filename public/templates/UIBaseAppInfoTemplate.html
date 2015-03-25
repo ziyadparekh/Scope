@@ -2,12 +2,51 @@
     <div class="ui secondary segment">
         <pre><code>
 App Name: <%= obj.app_name %>
-App Container: <%= obj.app_container %>
 App Remote: <%= obj.app_repo %>
+App Description: <%= obj.app_description %>
+App Type: <%= obj.app_type %>
 App Running: <%= obj.app_running %>
 App Start: <%= obj.app_start %>
 App User: <%= obj.app_user %>
             </code></pre>
+    </div>
+</script>
+
+<script type="text/template" id="app-card-view-template">
+    <div class="ui fluid card">
+        <div class="content">
+            <div class="header">
+                <i class="small <%= obj.color %> circle icon"
+                    data-content="<%= obj.appstatus %>"
+                    data-variation="inverted"
+                    data-position="left center">
+                </i>
+                <span class="ui header"><%= obj.app_name %></span>
+                <i class="right floated large purple <%= obj.icon %>"
+                   data-variation="inverted" data-content="<%= obj.apptype %>"
+                   data-position="right center">
+                </i>
+            </div>
+            <div class="meta">
+                <i class="icon wait small"></i>
+                <span class="time"> <%= obj.date %></span>
+            </div>
+            <div class="description">
+                <p><%= obj.app_description %></p>
+            </div>
+        </div>
+        <div class="extra content">
+            <div class="left floated">
+                <i class="icon star"></i>
+                <%= obj.app_stars.length %> stars
+            </div>
+            <div class="right floated author">
+                <a href="/user/<%= obj.user.user_name %>">
+                    <img class="ui avatar image" src="<%= obj.user.user_image %>" alt="<%= obj.user.user_name %>">
+                    <%= obj.user.user_name %>
+                </a>
+            </div>
+        </div>
     </div>
 </script>
 

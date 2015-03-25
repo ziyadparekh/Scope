@@ -81,7 +81,7 @@ var differentUser = function (req, res, next) {
 };
 
 var ensureAppExists = function (req, res, next) {
-	var appname = req.body.appname;
+	var appname = req.body.appname || req.query.appname;
 
 	if (!appname) {
 		return resHelper.send401(res, 'You must specify an appname');

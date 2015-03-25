@@ -82,18 +82,20 @@ exports.writeNginxFile = function (app) {
 	return def.getPromise();
 };
 
-exports.formatApp = function (appname, start, user, port) {
+exports.formatApp = function (appname, start, extra, user, port) {
 	var def = mkDeffered();
 	var dir = path.join(config.git_home_dir, user.user_name, appname + '.git');
 	var gitRepo = config.gituser + "@" + config.git_dom + ":" + dir;
 	var app = _.extend(AppModel, {
-		app_name  	: appname,
-		app_start 	: start,
-		app_user  	: user.user_name,
-		app_port  	: port + 1,
-		app_repo  	: gitRepo,
-		app_updated	: new Date(),
-		app_created	: new Date()
+		app_name  	    : appname,
+		app_start 	    : start,
+		app_user  	    : user.user_name,
+		app_port  	    : port + 1,
+		app_repo  	    : gitRepo,
+		app_updated	    : new Date(),
+		app_created	    : new Date(),
+        app_type        : extra.type,
+        app_description : extra.description
 	});
 
 	def.resolve(app);
