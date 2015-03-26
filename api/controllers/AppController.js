@@ -70,7 +70,7 @@ AppController.stop = function (req, res, next) {
 AppController.reboot = function (req, res, next) {
   var app = req.app;
   helpers.getDb().then(function (db) {
-    database.updateApp(app, { app_running : true }, 'apps', db).then(function (result) {
+    database.updateApp(app, { app_running : true, app_booted: true }, 'apps', db).then(function (result) {
       helpers.writeDockerFile(app).then(function () {
         shellHelpers.buildDocker(app).then(function (logs) {
             database.updateApp(app, {

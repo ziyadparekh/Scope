@@ -2,6 +2,7 @@
 
 var Templates = require("@templates/SettingsWrapperTemplate");
 var SettingsMenuView = require('views/settings/SettingsMenuView');
+var ApplicationsSettingsView = require('views/settings/ApplicationsSettingsView');
 
 module.exports = {
     template: Templates['settings-wrapper-view'],
@@ -19,12 +20,18 @@ module.exports = {
                         active: true,
                     },
                     {
-                        name: "application",
+                        name: "applications",
                         displayName: "Applications",
                         active: false
                     }
                 ]
             }
+        },
+        applications: {
+            construct: ApplicationsSettingsView,
+            location: "#settings-item",
+            singleton: true,
+            options: {}
         }
     }
 };

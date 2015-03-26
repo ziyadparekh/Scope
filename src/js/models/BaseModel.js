@@ -8,9 +8,11 @@ BaseModel = Backbone.AssociatedModel.extend({
 
     parse: function (data) {
         data = data || {};
-        data = data.result;
-
-        return data;
+        if (data.result) {
+            return data.result;
+        } else {
+            return data
+        }
     }
 
 });

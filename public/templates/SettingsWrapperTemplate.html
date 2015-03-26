@@ -2,14 +2,14 @@
     <div class="ui grid">
         <div class="sixteen wide column" id="alertView"></div>
         <div class="ui grid">
-            <div class="five wide column" id="settings-menu"></div>
+            <div class="four wide column" id="settings-menu"></div>
             <div class="eleven wide column" id="settings-item"></div>
         </div>
     </div>
 </script>
 
 <script type="text/template" id="settings-menu-view">
-    <div class="ui vertical menu">
+    <div class="ui large vertical menu">
         <div class="header item">
             <%= obj.menuHeader %>
         </div>
@@ -18,5 +18,22 @@
                 <%= item.displayName %>
             </a>
         <% }); %>
+    </div>
+</script>
+
+<script type="text/template" id="applications-settings-view">
+    <h4 class="ui top attached block header">
+      Applications
+    </h4>
+    <div class="ui fitted attached segment">
+        <table class="ui padded table">
+            <tbody>
+            <% _.each(obj.apps, function (app) { %>
+                <tr>
+                    <td><%= app.app_name %></td>
+                </tr>
+            <% }); %>
+            </tbody>
+        </table>
     </div>
 </script>

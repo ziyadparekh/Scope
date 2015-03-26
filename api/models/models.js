@@ -11,7 +11,8 @@ exports.defaultAppModel = {
 	app_created		: "",
 	app_updated		: "",
 	app_stars		: [],
-	app_running		: false
+	app_running		: false,
+       app_booted      : false
 };
 
 exports.defaultUserModel = {
