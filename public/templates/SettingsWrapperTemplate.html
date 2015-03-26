@@ -1,0 +1,22 @@
+<script type="text/template" id="settings-wrapper-view">
+    <div class="ui grid">
+        <div class="sixteen wide column" id="alertView"></div>
+        <div class="ui grid">
+            <div class="five wide column" id="settings-menu"></div>
+            <div class="eleven wide column" id="settings-item"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="settings-menu-view">
+    <div class="ui vertical menu">
+        <div class="header item">
+            <%= obj.menuHeader %>
+        </div>
+        <% _.each(obj.items, function (item) { %>
+            <a class="<%= item.active ? 'active teal' : '' %> item menu-item" data-name="<%= item.name %>">
+                <%= item.displayName %>
+            </a>
+        <% }); %>
+    </div>
+</script>

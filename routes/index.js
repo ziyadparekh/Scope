@@ -2,6 +2,8 @@
 
 var _ = require('underscore');
 var topnav = require('./configs/schema').topnav;
+var helpers = require("../api/helpers/helpers");
+var database = require("../api/database/database");
 
 var buildVars = function () {
     var js_vars = {
@@ -62,3 +64,18 @@ exports.profile = function (req, res) {
     });
     res.render('profile', js_vars);
 };
+
+exports.settings = function (req, res) {
+    var username = req.user.user_name;
+    var js_vars;
+    helpers.getDb().then(function (db) {
+        database.findSingleObjectInCollection(username, "users", db).then(function(user) {
+            js_vars = _.extend({}, buildVars(), {
+                navMenu: topnav.navMenu,
+                title: username,
+                user: user
+            });
+            res.render("settings", js_vars);
+        }).fail(function (err) { resHelper.send500(res, err.message); })
+    }).fail(function (err) { resHelper.send500(res, err.message); });
+}

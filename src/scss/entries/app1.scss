@@ -58,3 +58,15 @@ body {
 	-webkit-transition: background-color 3s ease-in-out 1s;
 	transition: background-color 3s ease-in-out 1s;
 }
+
+pre{
+    font-size: 14px;
+    overflow: auto;
+    padding-top: 0;
+    margin-bottom: 0;
+    font: 14px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+
+    span{
+        float: left;
+    }
+}

@@ -13,7 +13,7 @@ var shellHelpers  = require('../helpers/shellHelpers');
 var deferred      = require("../helpers/deferred");
 
 var User = {};
-var UserController = module.exports;
+var UserController = {};
 
 
 UserController.listApps = function (req, res, next) {
@@ -174,3 +174,5 @@ UserController.delete = function (req, res, next) {
         }).fail(function (err) { resHelper.send500(res, err.message); })
     }).fail(function (err) { resHelper.send500(res, err.message); });
 };
+
+module.exports = UserController;

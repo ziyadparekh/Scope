@@ -1,0 +1,16 @@
+<script type="text/template" id="app-info-view-template">
+    <h3 class="ui horizontal header divider">
+        <i class="settings icon"></i>
+        <%= obj.dividerMessage %>
+    </h3>
+    <h2 class="ui top attached blue block header">
+      The only commands you need to configure your app
+    </h2>
+    <div class="ui attached segment">
+        <p class="ui medium header">
+            ...You know how to do it
+        </p>
+        <pre class="ui secondary segment"><span>git remote add atom <%= obj.app_repo %></span>
+        <span>git push -u atom master</span></pre>
+    </div>
+</script>

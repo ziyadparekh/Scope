@@ -19,6 +19,10 @@ var AppModel = BaseModel.extend({
     getCreatedDate: function () {
         var date = moment(this.get("app_created"));
         return date.fromNow();
+    },
+
+    isStarredByCurrentUser: function () {
+        return this.get("isStarred") || false;
     }
 });
 

@@ -17,7 +17,7 @@ CreateAppWrapperView = Backbone.BaseView.extend({
 
 	defaults: {},
 
-	defaultKeys: ['subViewConfig', 'template', "AppInfoConfig"],
+	defaultKeys: ['subViewConfig', 'template', "AppInfoConfig", "AppRemoteConfig"],
 
 	viewEvents: {
 		'dropdown::changed' : 'onDropDownChanged',
@@ -40,7 +40,7 @@ CreateAppWrapperView = Backbone.BaseView.extend({
 			this.subs.add(key, {model : this.model});
 		}, this);
 
-		this.templateVars = this.generateTemplateVars();
+		this.templateVars = this.generateTemplateVars(options);
 
 		CreateAppWrapperView.__super__.initialize.call(this, options);
 	},
@@ -80,10 +80,13 @@ CreateAppWrapperView = Backbone.BaseView.extend({
 
     showAppDetails: function () {
         this.$("#alertView").empty();
-        this.subs.addConfig("appInfo", this.AppInfoConfig)
-        this.subs.add("appInfo", {model : this.model});
         this.$("#create-form").empty();
+        this.subs.addConfig("appInfo", this.AppInfoConfig);
+        this.subs.addConfig("appRemote", this.AppRemoteConfig);
+        this.subs.add("appInfo", {model : this.model});
+        this.subs.add("appRemote", {model : this.model});
         this.subs.get("appInfo").render().place("#create-form");
+        this.subs.get("appRemote").render().place("#app-info");
     },
 
     showError: function (err) {
