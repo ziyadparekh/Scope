@@ -171,6 +171,8 @@ app.delete(version + '/apps', ensureLoggedIn('/login'), authApp, _app_.delete);
 
 var feed = require('./api/controllers/FeedController');
 
+app.get(version + '/user/:username/apps', isUserRegistered, feed.userApps);
+
 app.get(version + '/list/latest', feed.latestApps);
 app.get(version + '/list/updated', feed.latestUpdatedApps);
 app.get(version + '/list/trending', feed.trendingApps);

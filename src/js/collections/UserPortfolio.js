@@ -12,9 +12,13 @@ UserPortfolioCollection = Backbone.Collection.extend({
     model: AppModel,
     parse: function (data) {
         data = data || {};
-        data = data.result;
-
-        return data;
+        if (data.result.result) {
+            return data.result.result
+        } else if (data.result) {
+            return data.result
+        } else {
+            return data
+        }
     }
 });
 

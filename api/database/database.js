@@ -269,6 +269,23 @@ exports.findTrendingApps = function (limit, offset, collectionString, db) {
     return deferred.getPromise();
 };
 
+exports.findUsersApps = function (limit, offset, username, collectionString, db) {
+    var collection = db.collection(collectionString);
+    var deferred = mkDeferred();
+    collection.find({ app_user : username })
+      .limit(limit)
+      .skip(offset)
+      .sort({ app_stars : -1})
+      .toArray(function (err, result) {
+        if (err || !result) {
+          deferred.reject(err);
+        } else {
+          deferred.resolve(result);
+        }
+      });
+      return deferred.getPromise();
+}
+
 exports.addFollowToUser = function (following, user, collectionString, db) {
   var collection = db.collection(collectionString);
   var deferred = mkDeferred();

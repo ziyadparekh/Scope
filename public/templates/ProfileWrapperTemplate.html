@@ -11,6 +11,9 @@
             <div class="center aligned eight column wide" id="profile-menu"></div>
         </div>
     </div>
+    <div class="ui centered  grid">
+        <div class="ten wide column" id="profile-collection"></div>
+    </div>
 </script>
 
 <script type="text/template" id="profile-image-view">
@@ -38,4 +41,12 @@
             </div>
         <% } %>
     </div>
+</script>
+
+<script type="text/template" id="profile-collection-template">
+    <div class="ui active inverted dimmer">
+        <div class="ui indeterminate text loader">Loading</div>
+    </div>
+    <div class="ui feed collection-container"></div>
+    <div class="fluid ui button load-more">Load More</div>
 </script>

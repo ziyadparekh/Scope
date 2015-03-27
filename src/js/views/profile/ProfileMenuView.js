@@ -51,6 +51,7 @@ ProfileMenuView = Backbone.BaseView.extend({
         });
 
         $(tab).addClass('active');
+        this.triggerBubble("menu::changed", tabName);
     },
 
     generateTemplateVars: function (options) {

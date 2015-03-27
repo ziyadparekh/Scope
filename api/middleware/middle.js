@@ -98,7 +98,7 @@ var ensureAppExists = function (req, res, next) {
 };
 
 var isUserRegistered = function (req, res, next) {
-	var username = req.username;
+	var username = req.params.username || req.username;
 	helpers.getDb().then(function (db) {
 		database.findSingleObjectInCollection(username, 'users', db).then(function () {
 			db.close();
